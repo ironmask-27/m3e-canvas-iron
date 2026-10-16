@@ -1,0 +1,1137 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`golden prompt > writes one screen of it in en for android 1`] = `
+"Please implement the "Home" screen in the Material 3 Expressive design language. A small app for logging the coffee you brew.
+Target a portrait phone screen (412×892dp), supporting both light and dark mode and following the device's system setting.
+Build it for Android, as a native app.
+The layout below is a rough sketch that conveys intent, not a finished spec. Do not reproduce it as a static picture; build the complete, usable app that this kind of product is normally expected to be.
+
+## Colors
+The theme is Purple. Set these on the Material 3 light and dark color schemes and reference every UI color through its role.
+Light scheme:
+- primary #6750A4 / onPrimary #FFFFFF / primaryContainer #EADDFF / onPrimaryContainer #21005D
+- secondary #635A75 / secondaryContainer #E8DEF8 / onSecondaryContainer #1D192B / tertiaryContainer #FFD8E4 / onTertiaryContainer #31111D
+- surface #FEF7FF / surfaceContainerLow #F7F2FA / surfaceContainer #F3EDF7 / surfaceContainerHigh #ECE6F0 / surfaceContainerHighest #E6E0E9
+- onSurface #1D1B20 / onSurfaceVariant #49454F / outline #79747E / outlineVariant #CAC4D0
+- inverseSurface #322F35 / inverseOnSurface #F5EFF7 / inversePrimary #D0BCFF
+- error #B3261E / onError #FFFFFF / errorContainer #F9DEDC / onErrorContainer #410E0B
+Dark scheme:
+- primary #D2BCFC / onPrimary #32226F / primaryContainer #4C3889 / onPrimaryContainer #E9DDFF
+- secondary #CDC1E1 / secondaryContainer #4B425D / onSecondaryContainer #E9DDFD / tertiaryContainer #6C3644 / onTertiaryContainer #FDDAE1
+- surface #141317 / surfaceContainerLow #1C1B1F / surfaceContainer #201F23 / surfaceContainerHigh #2B292D / surfaceContainerHighest #363438
+- onSurface #E4E1E7 / onSurfaceVariant #C9C4D1 / outline #938F9B / outlineVariant #494550
+- inverseSurface #E4E1E7 / inverseOnSurface #313034 / inversePrimary #6750A4
+- error #F2B8B5 / onError #601410 / errorContainer #8C1D18 / onErrorContainer #F9DEDC
+
+## Shape, type and motion
+- Corners follow the M3 Expressive defaults (pill buttons, 20dp cards, 28dp dialogs).
+- Use Roboto as the typeface. Typography uses the standard M3 weights.
+- Motion uses MotionScheme.standard(): smooth transitions and state changes with no bounce.
+
+## Layout
+The screen the app opens on.
+The "Home" screen, from top to bottom (overlapping parts are called out as such):
+- Near the top: a top app bar titled "Home" with a menu icon button on the left and search on the right.
+- In the middle, aligned left: a connected button group of 2 buttons: "Open" (filled), "Star" (tonal).
+- In the middle: a filled card with an image from https://example.com/photo.png (120dp tall) on top, the headline "Espresso" and the body "A short description of the picture".
+- Near the bottom: a navigation bar with 4 destinations: "Home" (home), "Search" (search), "Saved" (favorite), "Settings" (settings); "Search" is selected.
+
+## Behavior and navigation
+- The "Open" button opens the "Home wide" screen with a slide in from the right when tapped.
+- The "Star" button is a toggle button that flips on / off with every tap (when on, the label becomes "Starred" and the icon becomes star and the style becomes filled).
+- The "Home" screen opens the "Home wide" screen with a slide in from the right when swiping left; the screen follows the finger while dragging.
+
+## Component styles
+Per-component guidance for the parts in use. The numbers are the M3 Expressive defaults: let the standard components handle whatever they already do, and adjust where the content calls for it.
+- Top app bar: 64dp tall on surface, with its background extended behind the status bar (pad the top by the system inset). Title in titleLarge, 48dp icon buttons on each side. A bar named medium or large is M3's flexible top app bar: 112dp or 152dp tall, the icons in the top 64dp row and the title on its own line at the foot (headlineSmall / headlineMedium), collapsing to the small bar on scroll. The standard tint to surfaceContainer on scroll is fine.
+- Buttons: medium size, 56dp tall, fully rounded (pill). Filled uses primary, tonal uses secondaryContainer, outlined has a 1dp outline border. A connected button group is a row with 3dp gaps where only the inner adjoining corners shrink to 8dp and the outer corners stay round (the M3 Expressive connected button group). A button given a height follows the M3 size scale (XS 32dp, S 40dp, M 56dp, L 96dp, XL 136dp): take the side padding, the label size and the icon size of that size, and keep the corner radius at half the height.
+- Cards: 20dp corners. Place each card's image area where its line says — on top, along the bottom, filling the leading or trailing side, or as a full-bleed background (a scrim fades in from the text's side: dark under light text, light under dark text). Images keep their aspect ratio and are center-cropped to fill their area. Filled uses surfaceContainerHighest, elevated uses surfaceContainerLow with a level 1 shadow, outlined has a 1dp outlineVariant border. Headline in titleMedium, body in bodyMedium. 20dp padding, 4dp between headline and body, 12dp between the image and the text.
+- Navigation bar: 80dp tall on surfaceContainer, with its background extended down through the gesture navigation area (pad the bottom by the system inset). The active destination shows a secondaryContainer pill indicator (64×32dp), a filled icon and a labelMedium label.
+
+## General guidance
+- Work out what kind of app this is from the purpose of the screens, and implement the features such an app is normally expected to have (create, list, detail, edit, delete, search, settings, whichever apply) even where the sketch does not show them.
+- Treat the data as real. Persist what the user creates on the device (Room, DataStore or similar) so it survives restarts. Do not ship dummy or sample data; show an empty state when there is nothing yet. Validate input, and confirm or report failures and deletions appropriately.
+- Fill in behavior the sketch leaves out from the purpose of the screen and the labels of the parts. A button or item with no behavior specified should do what its label implies (save, send, open a detail screen, and so on), never nothing.
+- The layout only needs to keep the intent (order, grouping, relative placement); sizes and spacing may be adjusted to fit the content. If something would break on a device, prefer working over matching the sketch.
+- Use the standard components from Jetpack Compose material3 (latest, including the Expressive APIs); do not custom-draw parts the library provides.
+- Always reference colors through the scheme roles above (primary, surfaceContainer, …) instead of hard-coded values.
+- Keep 16dp screen margins and 8–16dp between parts, and use the M3 type styles (titleLarge, bodyMedium, …).
+- Parts described as "in one row" must share a single Row (horizontal container) on the same line; never stack them vertically or wrap them. The row is as tall as its tallest part and the others are vertically centered in it.
+- Parts described as "layered inside" a container are drawn on top of that container (a Box with the container as its background). The overlap is intentional: do not separate or reorder them for layout reasons. Later items in the description are drawn in front of earlier ones.
+- Give every tappable part ripple plus a slight press-scale. "Back" plays the entry transition in reverse, and the system back gesture / button must do the same.
+- Use Material Symbols Rounded for icons.
+- Do not verify on an emulator or a device. When the implementation is done, produce a signed release APK as the deliverable.
+- Write unit tests for the main logic and hand it over with all of them passing.
+- Support both the light and the dark color scheme, following the system setting."
+`;
+
+exports[`golden prompt > writes one screen of it in en for web 1`] = `
+"Please implement the "Home" screen in the Material 3 Expressive design language. A small app for logging the coffee you brew.
+Target a portrait phone screen (412×892dp), supporting both light and dark mode and following the device's system setting.
+Build it for the web, as an app that runs in the browser.
+The layout below is a rough sketch that conveys intent, not a finished spec. Do not reproduce it as a static picture; build the complete, usable app that this kind of product is normally expected to be.
+
+## Colors
+The theme is Purple. Set these on the Material 3 light and dark color schemes and reference every UI color through its role.
+Light scheme:
+- primary #6750A4 / onPrimary #FFFFFF / primaryContainer #EADDFF / onPrimaryContainer #21005D
+- secondary #635A75 / secondaryContainer #E8DEF8 / onSecondaryContainer #1D192B / tertiaryContainer #FFD8E4 / onTertiaryContainer #31111D
+- surface #FEF7FF / surfaceContainerLow #F7F2FA / surfaceContainer #F3EDF7 / surfaceContainerHigh #ECE6F0 / surfaceContainerHighest #E6E0E9
+- onSurface #1D1B20 / onSurfaceVariant #49454F / outline #79747E / outlineVariant #CAC4D0
+- inverseSurface #322F35 / inverseOnSurface #F5EFF7 / inversePrimary #D0BCFF
+- error #B3261E / onError #FFFFFF / errorContainer #F9DEDC / onErrorContainer #410E0B
+Dark scheme:
+- primary #D2BCFC / onPrimary #32226F / primaryContainer #4C3889 / onPrimaryContainer #E9DDFF
+- secondary #CDC1E1 / secondaryContainer #4B425D / onSecondaryContainer #E9DDFD / tertiaryContainer #6C3644 / onTertiaryContainer #FDDAE1
+- surface #141317 / surfaceContainerLow #1C1B1F / surfaceContainer #201F23 / surfaceContainerHigh #2B292D / surfaceContainerHighest #363438
+- onSurface #E4E1E7 / onSurfaceVariant #C9C4D1 / outline #938F9B / outlineVariant #494550
+- inverseSurface #E4E1E7 / inverseOnSurface #313034 / inversePrimary #6750A4
+- error #F2B8B5 / onError #601410 / errorContainer #8C1D18 / onErrorContainer #F9DEDC
+
+## Shape, type and motion
+- Corners follow the M3 Expressive defaults (pill buttons, 20dp cards, 28dp dialogs).
+- Use Roboto as the typeface. Typography uses the standard M3 weights.
+- Motion uses MotionScheme.standard(): smooth transitions and state changes with no bounce.
+
+## Layout
+The screen the app opens on.
+The "Home" screen, from top to bottom (overlapping parts are called out as such):
+- Near the top: a top app bar titled "Home" with a menu icon button on the left and search on the right.
+- In the middle, aligned left: a connected button group of 2 buttons: "Open" (filled), "Star" (tonal).
+- In the middle: a filled card with an image from https://example.com/photo.png (120dp tall) on top, the headline "Espresso" and the body "A short description of the picture".
+- Near the bottom: a navigation bar with 4 destinations: "Home" (home), "Search" (search), "Saved" (favorite), "Settings" (settings); "Search" is selected.
+
+## Behavior and navigation
+- The "Open" button opens the "Home wide" screen with a slide in from the right when tapped.
+- The "Star" button is a toggle button that flips on / off with every tap (when on, the label becomes "Starred" and the icon becomes star and the style becomes filled).
+- The "Home" screen opens the "Home wide" screen with a slide in from the right when swiping left; the screen follows the finger while dragging.
+
+## Component styles
+Per-component guidance for the parts in use. The numbers are the M3 Expressive defaults: let the standard components handle whatever they already do, and adjust where the content calls for it.
+- Top app bar: 64dp tall on surface. Title in titleLarge, 48dp icon buttons on each side. The standard tint to surfaceContainer on scroll is fine.
+- Buttons: medium size, 56dp tall, fully rounded (pill). Filled uses primary, tonal uses secondaryContainer, outlined has a 1dp outline border. A connected button group is a row with 3dp gaps where only the inner adjoining corners shrink to 8dp and the outer corners stay round (the M3 Expressive connected button group). A button given a height follows the M3 size scale (XS 32dp, S 40dp, M 56dp, L 96dp, XL 136dp): take the side padding, the label size and the icon size of that size, and keep the corner radius at half the height.
+- Cards: 20dp corners. Place each card's image area where its line says — on top, along the bottom, filling the leading or trailing side, or as a full-bleed background (a scrim fades in from the text's side: dark under light text, light under dark text). Images keep their aspect ratio and are center-cropped to fill their area. Filled uses surfaceContainerHighest, elevated uses surfaceContainerLow with a level 1 shadow, outlined has a 1dp outlineVariant border. Headline in titleMedium, body in bodyMedium. 20dp padding, 4dp between headline and body, 12dp between the image and the text.
+- Navigation bar: 80dp tall on surfaceContainer. The active destination shows a secondaryContainer pill indicator (64×32dp), a filled icon and a labelMedium label.
+
+## General guidance
+- Work out what kind of app this is from the purpose of the screens, and implement the features such an app is normally expected to have (create, list, detail, edit, delete, search, settings, whichever apply) even where the sketch does not show them.
+- Treat the data as real. Persist what the user creates in the browser (IndexedDB or similar) so it survives reloads. Do not ship dummy or sample data; show an empty state when there is nothing yet. Validate input, and confirm or report failures and deletions appropriately.
+- Fill in behavior the sketch leaves out from the purpose of the screen and the labels of the parts. A button or item with no behavior specified should do what its label implies (save, send, open a detail screen, and so on), never nothing.
+- The layout only needs to keep the intent (order, grouping, relative placement); sizes and spacing may be adjusted to fit the content. If something would break on a device, prefer working over matching the sketch.
+- Use the standard components from Material Web; do not custom-draw parts the library provides.
+- Always reference colors through the scheme roles above (primary, surfaceContainer, …) instead of hard-coded values.
+- Keep 16dp screen margins and 8–16dp between parts, and use the M3 type styles (titleLarge, bodyMedium, …).
+- Parts described as "in one row" must share a single Row (horizontal container) on the same line; never stack them vertically or wrap them. The row is as tall as its tallest part and the others are vertically centered in it.
+- Parts described as "layered inside" a container are drawn on top of that container (a Box with the container as its background). The overlap is intentional: do not separate or reorder them for layout reasons. Later items in the description are drawn in front of earlier ones.
+- Give every tappable part ripple plus a slight press-scale. "Back" plays the entry transition in reverse, and the system back gesture / button must do the same.
+- Use Material Symbols Rounded for icons.
+- Do not verify in a browser. When the implementation is done, run the production build and provide its output as the deliverable.
+- Write unit tests for the main logic and hand it over with all of them passing.
+- Support both the light and the dark color scheme, following the system setting."
+`;
+
+exports[`golden prompt > writes one screen of it in ja for android 1`] = `
+"「Home」画面を Material 3 Expressive のデザインで実装してください。A small app for logging the coffee you brew。
+想定はスマホの縦画面（412×892dp）で、ライトモードとダークモードの両方に対応し、端末のシステム設定に従って切り替えます。
+実装先は Android（ネイティブアプリ）です。
+下の画面構成は、意図を伝えるためのラフスケッチです。完成図の仕様ではないので、静止画のように再現するのではなく、この種のアプリとして普通に期待される機能を一通り備えた、実際に使える完成品として仕上げてください。
+
+## カラー
+テーマは Purple 系です。Material 3 のライトとダークのカラースキームに次の色を設定し、UI の色はすべてこのロール経由で参照してください。
+ライトスキーム:
+- primary #6750A4 / onPrimary #FFFFFF / primaryContainer #EADDFF / onPrimaryContainer #21005D
+- secondary #635A75 / secondaryContainer #E8DEF8 / onSecondaryContainer #1D192B / tertiaryContainer #FFD8E4 / onTertiaryContainer #31111D
+- surface #FEF7FF / surfaceContainerLow #F7F2FA / surfaceContainer #F3EDF7 / surfaceContainerHigh #ECE6F0 / surfaceContainerHighest #E6E0E9
+- onSurface #1D1B20 / onSurfaceVariant #49454F / outline #79747E / outlineVariant #CAC4D0
+- inverseSurface #322F35 / inverseOnSurface #F5EFF7 / inversePrimary #D0BCFF
+- error #B3261E / onError #FFFFFF / errorContainer #F9DEDC / onErrorContainer #410E0B
+ダークスキーム:
+- primary #D2BCFC / onPrimary #32226F / primaryContainer #4C3889 / onPrimaryContainer #E9DDFF
+- secondary #CDC1E1 / secondaryContainer #4B425D / onSecondaryContainer #E9DDFD / tertiaryContainer #6C3644 / onTertiaryContainer #FDDAE1
+- surface #141317 / surfaceContainerLow #1C1B1F / surfaceContainer #201F23 / surfaceContainerHigh #2B292D / surfaceContainerHighest #363438
+- onSurface #E4E1E7 / onSurfaceVariant #C9C4D1 / outline #938F9B / outlineVariant #494550
+- inverseSurface #E4E1E7 / inverseOnSurface #313034 / inversePrimary #6750A4
+- error #F2B8B5 / onError #601410 / errorContainer #8C1D18 / onErrorContainer #F9DEDC
+
+## 形・文字・動き
+- 角丸は M3 Expressive の標準値のまま（ボタンはピル型、カードは 20dp、ダイアログは 28dp）。
+- 書体は Roboto を使う。タイポグラフィは M3 の標準ウェイト。
+- モーションは MotionScheme.standard()。画面遷移や状態変化は弾まない滑らかな動きにする。
+
+## 画面構成
+The screen the app opens on。
+「Home」画面は上から順に次の通りです。重なっている部品はその旨を書いています。
+- 上部にタイトル「Home」のトップアプリバー。左に menu、右に search のアイコンボタンを置きます。
+- 中央付近に左寄せで「Open」(塗りつぶし)「Star」(トーナル)の2つのボタンが横に連結したボタングループを置きます。
+- 中央付近に塗りつぶしカード。上部に https://example.com/photo.png の画像（高さ 120dp）、見出し「Espresso」、本文「A short description of the picture」を置きます。
+- 下部に4項目のナビゲーションバー（「ホーム」(home)、「検索」(search)、「保存」(favorite)、「設定」(settings)。「検索」が選択状態）を置きます。
+
+## 振る舞いと画面遷移
+- 「Open」ボタンは、タップすると「Home wide」画面へ右からのスライドで遷移する。
+- 「Star」ボタンは、タップするたびにオン／オフが切り替わるトグルボタンにする（オンのときはラベルが「Starred」に変わる、アイコンが star に変わる、スタイルが塗りつぶしに変わる）。
+- 「Home」画面は、左へスワイプすると指の動きに追従して「Home wide」画面へ右からのスライドで遷移する。
+
+## 各部品のスタイル
+使っている部品ごとの目安です。数値は M3 Expressive の標準値なので、標準コンポーネントで実現できるものは標準に任せ、内容に合わせて調整して構いません。
+- トップアプリバー: 高さ 64dp、背景は surface。背景はステータスバーの後ろまで伸ばし、その分（システムインセット）だけ上に余白を取る。タイトルは titleLarge、左右のアイコンボタンは 48dp。スクロール時に surfaceContainer へ色が変わる標準の挙動でよい。ミディアム／ラージと指定されたバーは M3 の flexible top app bar で、高さ 112dp／152dp、アイコンは上 64dp の列に、タイトルは下段に独立した行（headlineSmall／headlineMedium）で置き、スクロールで小さいバーに縮む。
+- ボタン: 高さ 56dp のミディアムサイズで、角は完全な丸（ピル型）。塗りつぶしは primary、トーナルは secondaryContainer、アウトラインは outline の 1dp 枠。横に連結したボタングループは 3dp の隙間で並べ、隣り合う内側の角だけ 8dp に小さくし、外側の角は丸のままにする（M3 Expressive の Connected button group）。高さを指定されたボタンは M3 のサイズ（XS 32dp / S 40dp / M 56dp / L 96dp / XL 136dp）に従い、左右の余白・文字・アイコンをそのサイズのものにし、角丸は高さの半分にする。
+- カード: 角丸 20dp。画像領域は各カードの記述に従い、上部・下部・先頭側・末尾側・背景全面のいずれかに置く（背景の場合はテキストの側からスクリムをかける。明るい文字なら黒、暗い文字なら白のフェード）。画像はアスペクト比を保って中央でクロップし、領域いっぱいに表示する。塗りつぶしは surfaceContainerHighest、エレベーテッドは surfaceContainerLow に Level 1 の影、アウトラインは outlineVariant の 1dp 枠。見出しは titleMedium、本文は bodyMedium。内側余白は 20dp、見出しと本文の間は 4dp、画像とテキストの間は 12dp。
+- ナビゲーションバー: 高さ 80dp、背景は surfaceContainer。背景は画面下端のジェスチャーナビゲーション領域まで伸ばし、その分（システムインセット）だけ下に余白を取る。選択中の項目は secondaryContainer のピル型インジケータ（幅 64dp・高さ 32dp）で示し、アイコンは塗りつぶし、ラベルは labelMedium。
+
+## 全体の指針
+- まず画面の目的から「これは何のアプリか」を判断し、そのカテゴリのアプリとして一般に期待される機能（作成・一覧・詳細・編集・削除・検索・設定など、該当するもの）を、スケッチに描かれていなくても一通り実装する。
+- データは本物として扱う。ユーザーが作成したデータは端末に（Room や DataStore など）永続化し、再起動後も残す。ダミーやサンプルのデータは入れず、何もない状態には空の案内を表示する。入力は検証し、失敗や削除は適切に確認・通知する。
+- スケッチに書かれていない振る舞いは、画面の目的と部品のラベルから補う。動作の指定がないボタンや項目は、そのラベルにふさわしい処理（保存、送信、詳細画面を開く、など）を実装し、何も起きないままにしない。
+- 配置は意図（順序・まとまり・上下左右の位置関係）を守れば十分で、寸法や余白は内容に合わせて調整してよい。実機で崩れるなら、スケッチより動くことを優先する。
+- コンポーネントは Jetpack Compose の material3（Expressive API を含む最新版） の標準部品を使い、ライブラリにある部品を独自描画しない。
+- 色は必ず上のカラースキームのロール名（primary、surfaceContainer など）で参照し、ハードコードした色を使わない。
+- 余白は画面端 16dp、部品同士は 8〜16dp を基本にし、タイポグラフィは M3 の型（titleLarge、bodyMedium など）を使う。
+- 「横一列に並べる」と書いた部品は必ず 1 つの Row（横並びコンテナ）に入れて同じ行に置き、縦に積んだり次の行に折り返したりしない。行の高さは一番高い部品に合わせ、他は縦中央に揃える。
+- 「〜の中に重ねて配置」と書いた部品は、その容器（ボックスやカード）を背景にした Box の上に重ねて描く。重なりは意図したものなので、レイアウトの都合で分離したり順序を変えたりしない。前後関係は記述の順（後に書いたものが前面）に従う。
+- タップできる部品にはリップルと軽い縮小のフィードバックを付ける。「戻る」は入ったときの遷移を逆再生し、システムの戻る操作（戻るジェスチャー・戻るボタン）でも同じ動きにする。
+- アイコンは Material Symbols Rounded を使う。
+- エミュレータや実機での動作検証は不要。実装が終わったら署名済みの release APK を成果物として提供する。
+- 主要なロジックにユニットテストを書き、すべて通る状態で提出する。
+- ライトとダークの両方のカラースキームに対応し、システム設定に追従する。"
+`;
+
+exports[`golden prompt > writes one screen of it in ja for web 1`] = `
+"「Home」画面を Material 3 Expressive のデザインで実装してください。A small app for logging the coffee you brew。
+想定はスマホの縦画面（412×892dp）で、ライトモードとダークモードの両方に対応し、端末のシステム設定に従って切り替えます。
+実装先は Web（ブラウザで動くアプリ）です。
+下の画面構成は、意図を伝えるためのラフスケッチです。完成図の仕様ではないので、静止画のように再現するのではなく、この種のアプリとして普通に期待される機能を一通り備えた、実際に使える完成品として仕上げてください。
+
+## カラー
+テーマは Purple 系です。Material 3 のライトとダークのカラースキームに次の色を設定し、UI の色はすべてこのロール経由で参照してください。
+ライトスキーム:
+- primary #6750A4 / onPrimary #FFFFFF / primaryContainer #EADDFF / onPrimaryContainer #21005D
+- secondary #635A75 / secondaryContainer #E8DEF8 / onSecondaryContainer #1D192B / tertiaryContainer #FFD8E4 / onTertiaryContainer #31111D
+- surface #FEF7FF / surfaceContainerLow #F7F2FA / surfaceContainer #F3EDF7 / surfaceContainerHigh #ECE6F0 / surfaceContainerHighest #E6E0E9
+- onSurface #1D1B20 / onSurfaceVariant #49454F / outline #79747E / outlineVariant #CAC4D0
+- inverseSurface #322F35 / inverseOnSurface #F5EFF7 / inversePrimary #D0BCFF
+- error #B3261E / onError #FFFFFF / errorContainer #F9DEDC / onErrorContainer #410E0B
+ダークスキーム:
+- primary #D2BCFC / onPrimary #32226F / primaryContainer #4C3889 / onPrimaryContainer #E9DDFF
+- secondary #CDC1E1 / secondaryContainer #4B425D / onSecondaryContainer #E9DDFD / tertiaryContainer #6C3644 / onTertiaryContainer #FDDAE1
+- surface #141317 / surfaceContainerLow #1C1B1F / surfaceContainer #201F23 / surfaceContainerHigh #2B292D / surfaceContainerHighest #363438
+- onSurface #E4E1E7 / onSurfaceVariant #C9C4D1 / outline #938F9B / outlineVariant #494550
+- inverseSurface #E4E1E7 / inverseOnSurface #313034 / inversePrimary #6750A4
+- error #F2B8B5 / onError #601410 / errorContainer #8C1D18 / onErrorContainer #F9DEDC
+
+## 形・文字・動き
+- 角丸は M3 Expressive の標準値のまま（ボタンはピル型、カードは 20dp、ダイアログは 28dp）。
+- 書体は Roboto を使う。タイポグラフィは M3 の標準ウェイト。
+- モーションは MotionScheme.standard()。画面遷移や状態変化は弾まない滑らかな動きにする。
+
+## 画面構成
+The screen the app opens on。
+「Home」画面は上から順に次の通りです。重なっている部品はその旨を書いています。
+- 上部にタイトル「Home」のトップアプリバー。左に menu、右に search のアイコンボタンを置きます。
+- 中央付近に左寄せで「Open」(塗りつぶし)「Star」(トーナル)の2つのボタンが横に連結したボタングループを置きます。
+- 中央付近に塗りつぶしカード。上部に https://example.com/photo.png の画像（高さ 120dp）、見出し「Espresso」、本文「A short description of the picture」を置きます。
+- 下部に4項目のナビゲーションバー（「ホーム」(home)、「検索」(search)、「保存」(favorite)、「設定」(settings)。「検索」が選択状態）を置きます。
+
+## 振る舞いと画面遷移
+- 「Open」ボタンは、タップすると「Home wide」画面へ右からのスライドで遷移する。
+- 「Star」ボタンは、タップするたびにオン／オフが切り替わるトグルボタンにする（オンのときはラベルが「Starred」に変わる、アイコンが star に変わる、スタイルが塗りつぶしに変わる）。
+- 「Home」画面は、左へスワイプすると指の動きに追従して「Home wide」画面へ右からのスライドで遷移する。
+
+## 各部品のスタイル
+使っている部品ごとの目安です。数値は M3 Expressive の標準値なので、標準コンポーネントで実現できるものは標準に任せ、内容に合わせて調整して構いません。
+- トップアプリバー: 高さ 64dp、背景は surface。タイトルは titleLarge、左右のアイコンボタンは 48dp。スクロール時に surfaceContainer へ色が変わる標準の挙動でよい。
+- ボタン: 高さ 56dp のミディアムサイズで、角は完全な丸（ピル型）。塗りつぶしは primary、トーナルは secondaryContainer、アウトラインは outline の 1dp 枠。横に連結したボタングループは 3dp の隙間で並べ、隣り合う内側の角だけ 8dp に小さくし、外側の角は丸のままにする（M3 Expressive の Connected button group）。高さを指定されたボタンは M3 のサイズ（XS 32dp / S 40dp / M 56dp / L 96dp / XL 136dp）に従い、左右の余白・文字・アイコンをそのサイズのものにし、角丸は高さの半分にする。
+- カード: 角丸 20dp。画像領域は各カードの記述に従い、上部・下部・先頭側・末尾側・背景全面のいずれかに置く（背景の場合はテキストの側からスクリムをかける。明るい文字なら黒、暗い文字なら白のフェード）。画像はアスペクト比を保って中央でクロップし、領域いっぱいに表示する。塗りつぶしは surfaceContainerHighest、エレベーテッドは surfaceContainerLow に Level 1 の影、アウトラインは outlineVariant の 1dp 枠。見出しは titleMedium、本文は bodyMedium。内側余白は 20dp、見出しと本文の間は 4dp、画像とテキストの間は 12dp。
+- ナビゲーションバー: 高さ 80dp、背景は surfaceContainer。選択中の項目は secondaryContainer のピル型インジケータ（幅 64dp・高さ 32dp）で示し、アイコンは塗りつぶし、ラベルは labelMedium。
+
+## 全体の指針
+- まず画面の目的から「これは何のアプリか」を判断し、そのカテゴリのアプリとして一般に期待される機能（作成・一覧・詳細・編集・削除・検索・設定など、該当するもの）を、スケッチに描かれていなくても一通り実装する。
+- データは本物として扱う。ユーザーが作成したデータはブラウザに（IndexedDB など）永続化し、再読み込み後も残す。ダミーやサンプルのデータは入れず、何もない状態には空の案内を表示する。入力は検証し、失敗や削除は適切に確認・通知する。
+- スケッチに書かれていない振る舞いは、画面の目的と部品のラベルから補う。動作の指定がないボタンや項目は、そのラベルにふさわしい処理（保存、送信、詳細画面を開く、など）を実装し、何も起きないままにしない。
+- 配置は意図（順序・まとまり・上下左右の位置関係）を守れば十分で、寸法や余白は内容に合わせて調整してよい。実機で崩れるなら、スケッチより動くことを優先する。
+- コンポーネントは Material Web の標準部品を使い、ライブラリにある部品を独自描画しない。
+- 色は必ず上のカラースキームのロール名（primary、surfaceContainer など）で参照し、ハードコードした色を使わない。
+- 余白は画面端 16dp、部品同士は 8〜16dp を基本にし、タイポグラフィは M3 の型（titleLarge、bodyMedium など）を使う。
+- 「横一列に並べる」と書いた部品は必ず 1 つの Row（横並びコンテナ）に入れて同じ行に置き、縦に積んだり次の行に折り返したりしない。行の高さは一番高い部品に合わせ、他は縦中央に揃える。
+- 「〜の中に重ねて配置」と書いた部品は、その容器（ボックスやカード）を背景にした Box の上に重ねて描く。重なりは意図したものなので、レイアウトの都合で分離したり順序を変えたりしない。前後関係は記述の順（後に書いたものが前面）に従う。
+- タップできる部品にはリップルと軽い縮小のフィードバックを付ける。「戻る」は入ったときの遷移を逆再生し、システムの戻る操作（戻るジェスチャー・戻るボタン）でも同じ動きにする。
+- アイコンは Material Symbols Rounded を使う。
+- ブラウザでの動作検証は不要。実装が終わったらproduction build を実行し、その出力を成果物として提供する。
+- 主要なロジックにユニットテストを書き、すべて通る状態で提出する。
+- ライトとダークの両方のカラースキームに対応し、システム設定に追従する。"
+`;
+
+exports[`golden prompt > writes one screen of it in ko for android 1`] = `
+"Material 3 Expressive 디자인으로 구현해 주세요: "Home" 화면. A small app for logging the coffee you brew.
+세로형 휴대전화 화면(412×892dp)을 대상으로 하며, 라이트 모드와 다크 모드를 모두 지원하고 기기의 시스템 설정을 따른다.
+Android 네이티브 앱으로 구현한다.
+아래 화면 구성은 의도를 전달하는 대략적인 스케치이며 완성 사양이 아니다. 정적인 그림처럼 복제하지 말고 이 종류의 제품에 일반적으로 필요한 기능을 갖춘 실제 사용 가능한 앱으로 완성한다.
+
+## 색상
+테마는 Purple 계열이다. Material 3 라이트 및 다크 색상 구성에 다음 색상을 설정하고 모든 UI 색상을 해당 역할로 참조한다.
+라이트 색상 구성:
+- primary #6750A4 / onPrimary #FFFFFF / primaryContainer #EADDFF / onPrimaryContainer #21005D
+- secondary #635A75 / secondaryContainer #E8DEF8 / onSecondaryContainer #1D192B / tertiaryContainer #FFD8E4 / onTertiaryContainer #31111D
+- surface #FEF7FF / surfaceContainerLow #F7F2FA / surfaceContainer #F3EDF7 / surfaceContainerHigh #ECE6F0 / surfaceContainerHighest #E6E0E9
+- onSurface #1D1B20 / onSurfaceVariant #49454F / outline #79747E / outlineVariant #CAC4D0
+- inverseSurface #322F35 / inverseOnSurface #F5EFF7 / inversePrimary #D0BCFF
+- error #B3261E / onError #FFFFFF / errorContainer #F9DEDC / onErrorContainer #410E0B
+다크 색상 구성:
+- primary #D2BCFC / onPrimary #32226F / primaryContainer #4C3889 / onPrimaryContainer #E9DDFF
+- secondary #CDC1E1 / secondaryContainer #4B425D / onSecondaryContainer #E9DDFD / tertiaryContainer #6C3644 / onTertiaryContainer #FDDAE1
+- surface #141317 / surfaceContainerLow #1C1B1F / surfaceContainer #201F23 / surfaceContainerHigh #2B292D / surfaceContainerHighest #363438
+- onSurface #E4E1E7 / onSurfaceVariant #C9C4D1 / outline #938F9B / outlineVariant #494550
+- inverseSurface #E4E1E7 / inverseOnSurface #313034 / inversePrimary #6750A4
+- error #F2B8B5 / onError #601410 / errorContainer #8C1D18 / onErrorContainer #F9DEDC
+
+## 모양, 글꼴 및 모션
+- M3 Expressive 기본 모서리를 사용한다(버튼은 알약 모양, 카드 20dp, 대화상자 28dp).
+- 사용할 글꼴: Roboto. M3 표준 글자 굵기를 사용한다.
+- 모션은 MotionScheme.standard()를 사용한다. 화면 전환과 상태 변화는 튀지 않고 부드럽게 처리한다.
+
+## 화면 구성
+The screen the app opens on.
+"Home" 화면. 위에서부터 다음과 같습니다. 겹친 부품은 별도로 표시합니다.
+- 위쪽 다음 항목을 배치합니다: 제목이 "Home"인 상단 앱 바, 왼쪽 menu, 오른쪽 search 아이콘 버튼.
+- 가운데 왼쪽 정렬로 다음 항목을 배치합니다: "Open"(채움), "Star"(토널) 버튼 2개를 가로로 연결한 버튼 그룹.
+- 가운데 다음 항목을 배치합니다: 채움 카드. 위쪽에 https://example.com/photo.png의 이미지(높이 120dp), 제목 "Espresso", 본문 "A short description of the picture".
+- 아래쪽 다음 항목을 배치합니다: 4개 항목의 내비게이션 바("홈"(home), "검색"(search), "저장됨"(favorite), "설정"(settings), "검색" 선택됨).
+
+## 동작 및 화면 전환
+- "Open" 버튼: 탭하면 "Home wide" 화면으로 오른쪽에서 슬라이드 전환하여 이동한다.
+- "Star" 버튼: 탭할 때마다 켜짐/꺼짐이 전환되는 토글 버튼으로 만든다(켜졌을 때 변경할 레이블: "Starred", 변경할 아이콘: star, 변경할 스타일: 채움).
+- "Home" 화면은 왼쪽으로 스와이프하면 손가락을 따라 움직이며 "Home wide" 화면으로 오른쪽에서 슬라이드 전환하여 이동한다.
+
+## 부품별 스타일
+사용된 부품별 지침입니다. 수치는 M3 Expressive 기본값이며 표준 컴포넌트가 제공하는 동작은 그대로 사용하고 내용에 맞게 조정할 수 있습니다.
+- 상단 앱 바: 높이 64dp, 배경 surface. 상태 표시줄 뒤까지 배경을 늘리고 시스템 인셋만큼 위쪽 여백을 둔다. 제목은 titleLarge, 양쪽 아이콘 버튼은 48dp를 사용한다. 중간/대형으로 지정된 바는 M3 flexible top app bar로 높이 112dp/152dp, 아이콘은 위 64dp 줄에, 제목은 아래 별도 줄(headlineSmall/headlineMedium)에 두고 스크롤하면 작은 바로 줄어든다.
+- 버튼: 높이 56dp의 중간 크기, 완전 둥근 알약 모양. 채움은 primary, 토널은 secondaryContainer, 윤곽선은 1dp outline 테두리를 사용한다. 연결 버튼 그룹은 간격 3dp, 맞닿는 안쪽 모서리 8dp, 바깥쪽 모서리는 둥글게 유지한다. 높이가 지정된 버튼은 M3 크기(XS 32dp / S 40dp / M 56dp / L 96dp / XL 136dp)를 따라 좌우 여백, 글자 크기, 아이콘 크기를 그 크기의 값으로 하고 모서리는 높이의 절반으로 한다.
+- 카드: 모서리 20dp. 이미지 영역은 각 카드의 설명에 따라 위쪽·아래쪽·앞쪽·뒤쪽·배경 전체 중 한 곳에 배치한다(배경일 때는 텍스트 쪽에서 스크림을 넣는다. 밝은 텍스트에는 검정, 어두운 텍스트에는 흰색 페이드). 이미지는 비율을 유지한 채 가운데를 기준으로 잘라 영역을 채운다. 채움은 surfaceContainerHighest, 돌출은 surfaceContainerLow와 Level 1 그림자, 윤곽선은 1dp outlineVariant 테두리를 사용한다. 제목 titleMedium, 본문 bodyMedium. 안쪽 여백 20dp, 제목과 본문 사이 4dp, 이미지와 텍스트 사이 12dp.
+- 내비게이션 바: 높이 80dp, 배경 surfaceContainer. 제스처 내비게이션 영역까지 배경을 늘리고 시스템 인셋만큼 아래쪽 여백을 둔다. 선택 항목은 64×32dp secondaryContainer 알약 표시기, 채운 아이콘, labelMedium 레이블로 표시한다.
+
+## 전체 지침
+- 화면의 목적에서 앱의 종류를 판단하고, 스케치에 없더라도 그 종류의 앱에 일반적으로 필요한 기능(만들기, 목록, 상세, 편집, 삭제, 검색, 설정 등)을 구현한다.
+- 데이터를 실제 데이터로 취급한다. 사용자가 만든 데이터는 기기(Room, DataStore 등)에 저장해 재시작 후에도 유지한다. 더미나 샘플 데이터는 넣지 않고 데이터가 없으면 빈 상태를 표시한다. 입력을 검증하고 실패와 삭제는 적절히 확인하거나 알린다.
+- 스케치에 없는 동작은 화면 목적과 부품 레이블을 바탕으로 보완한다. 동작이 지정되지 않은 버튼이나 항목도 레이블에 맞는 동작(저장, 보내기, 상세 화면 열기 등)을 수행해야 한다.
+- 레이아웃은 의도한 순서, 그룹, 상대 위치를 유지하되 크기와 간격은 내용에 맞게 조정할 수 있다. 실제 기기에서 깨진다면 스케치 일치보다 정상 동작을 우선한다.
+- 최신 Expressive API를 포함한 Jetpack Compose material3의 표준 컴포넌트를 사용하고 라이브러리에 있는 부품을 직접 그리지 않는다.
+- 색상은 하드코딩하지 말고 위 색상 구성의 역할 이름(primary, surfaceContainer 등)으로 참조한다.
+- 화면 가장자리는 16dp, 부품 사이는 8~16dp를 기본으로 하고 M3 글꼴 스타일(titleLarge, bodyMedium 등)을 사용한다.
+- '한 행에 배치'한 부품은 하나의 Row(가로 컨테이너)에서 같은 줄에 두고 세로로 쌓거나 줄 바꿈하지 않는다. 행 높이는 가장 높은 부품에 맞추고 나머지는 세로 중앙 정렬한다.
+- '내부에 겹쳐 배치'한 부품은 해당 컨테이너(상자 또는 카드)를 배경으로 하는 Box 위에 그린다. 이 겹침은 의도된 것이므로 분리하거나 순서를 바꾸지 않으며 나중에 설명된 항목을 앞에 그린다.
+- 탭 가능한 부품에는 리플과 약한 축소 피드백을 준다. '뒤로'는 진입 전환을 반대로 재생하고 시스템 뒤로 제스처나 버튼도 같은 동작을 수행한다.
+- 아이콘은 Material Symbols Rounded를 사용한다.
+- 에뮬레이터나 실제 기기 동작 검증은 필요 없다. 구현 후 서명된 release APK을 결과물로 제공한다.
+- 주요 로직에 단위 테스트를 작성하고 모두 통과하는 상태로 제출한다.
+- 라이트와 다크 색상 스킴을 모두 지원하고 시스템 설정을 따른다."
+`;
+
+exports[`golden prompt > writes one screen of it in ko for web 1`] = `
+"Material 3 Expressive 디자인으로 구현해 주세요: "Home" 화면. A small app for logging the coffee you brew.
+세로형 휴대전화 화면(412×892dp)을 대상으로 하며, 라이트 모드와 다크 모드를 모두 지원하고 기기의 시스템 설정을 따른다.
+브라우저에서 실행되는 웹 앱으로 구현한다.
+아래 화면 구성은 의도를 전달하는 대략적인 스케치이며 완성 사양이 아니다. 정적인 그림처럼 복제하지 말고 이 종류의 제품에 일반적으로 필요한 기능을 갖춘 실제 사용 가능한 앱으로 완성한다.
+
+## 색상
+테마는 Purple 계열이다. Material 3 라이트 및 다크 색상 구성에 다음 색상을 설정하고 모든 UI 색상을 해당 역할로 참조한다.
+라이트 색상 구성:
+- primary #6750A4 / onPrimary #FFFFFF / primaryContainer #EADDFF / onPrimaryContainer #21005D
+- secondary #635A75 / secondaryContainer #E8DEF8 / onSecondaryContainer #1D192B / tertiaryContainer #FFD8E4 / onTertiaryContainer #31111D
+- surface #FEF7FF / surfaceContainerLow #F7F2FA / surfaceContainer #F3EDF7 / surfaceContainerHigh #ECE6F0 / surfaceContainerHighest #E6E0E9
+- onSurface #1D1B20 / onSurfaceVariant #49454F / outline #79747E / outlineVariant #CAC4D0
+- inverseSurface #322F35 / inverseOnSurface #F5EFF7 / inversePrimary #D0BCFF
+- error #B3261E / onError #FFFFFF / errorContainer #F9DEDC / onErrorContainer #410E0B
+다크 색상 구성:
+- primary #D2BCFC / onPrimary #32226F / primaryContainer #4C3889 / onPrimaryContainer #E9DDFF
+- secondary #CDC1E1 / secondaryContainer #4B425D / onSecondaryContainer #E9DDFD / tertiaryContainer #6C3644 / onTertiaryContainer #FDDAE1
+- surface #141317 / surfaceContainerLow #1C1B1F / surfaceContainer #201F23 / surfaceContainerHigh #2B292D / surfaceContainerHighest #363438
+- onSurface #E4E1E7 / onSurfaceVariant #C9C4D1 / outline #938F9B / outlineVariant #494550
+- inverseSurface #E4E1E7 / inverseOnSurface #313034 / inversePrimary #6750A4
+- error #F2B8B5 / onError #601410 / errorContainer #8C1D18 / onErrorContainer #F9DEDC
+
+## 모양, 글꼴 및 모션
+- M3 Expressive 기본 모서리를 사용한다(버튼은 알약 모양, 카드 20dp, 대화상자 28dp).
+- 사용할 글꼴: Roboto. M3 표준 글자 굵기를 사용한다.
+- 모션은 MotionScheme.standard()를 사용한다. 화면 전환과 상태 변화는 튀지 않고 부드럽게 처리한다.
+
+## 화면 구성
+The screen the app opens on.
+"Home" 화면. 위에서부터 다음과 같습니다. 겹친 부품은 별도로 표시합니다.
+- 위쪽 다음 항목을 배치합니다: 제목이 "Home"인 상단 앱 바, 왼쪽 menu, 오른쪽 search 아이콘 버튼.
+- 가운데 왼쪽 정렬로 다음 항목을 배치합니다: "Open"(채움), "Star"(토널) 버튼 2개를 가로로 연결한 버튼 그룹.
+- 가운데 다음 항목을 배치합니다: 채움 카드. 위쪽에 https://example.com/photo.png의 이미지(높이 120dp), 제목 "Espresso", 본문 "A short description of the picture".
+- 아래쪽 다음 항목을 배치합니다: 4개 항목의 내비게이션 바("홈"(home), "검색"(search), "저장됨"(favorite), "설정"(settings), "검색" 선택됨).
+
+## 동작 및 화면 전환
+- "Open" 버튼: 탭하면 "Home wide" 화면으로 오른쪽에서 슬라이드 전환하여 이동한다.
+- "Star" 버튼: 탭할 때마다 켜짐/꺼짐이 전환되는 토글 버튼으로 만든다(켜졌을 때 변경할 레이블: "Starred", 변경할 아이콘: star, 변경할 스타일: 채움).
+- "Home" 화면은 왼쪽으로 스와이프하면 손가락을 따라 움직이며 "Home wide" 화면으로 오른쪽에서 슬라이드 전환하여 이동한다.
+
+## 부품별 스타일
+사용된 부품별 지침입니다. 수치는 M3 Expressive 기본값이며 표준 컴포넌트가 제공하는 동작은 그대로 사용하고 내용에 맞게 조정할 수 있습니다.
+- 상단 앱 바: 높이 64dp, 배경 surface. 제목은 titleLarge, 양쪽 아이콘 버튼은 48dp를 사용한다. 스크롤 시 surfaceContainer로 색상이 바뀌는 표준 동작을 사용한다.
+- 버튼: 높이 56dp의 중간 크기, 완전 둥근 알약 모양. 채움은 primary, 토널은 secondaryContainer, 윤곽선은 1dp outline 테두리를 사용한다. 연결 버튼 그룹은 간격 3dp, 맞닿는 안쪽 모서리 8dp, 바깥쪽 모서리는 둥글게 유지한다. 높이가 지정된 버튼은 M3 크기(XS 32dp / S 40dp / M 56dp / L 96dp / XL 136dp)를 따라 좌우 여백, 글자 크기, 아이콘 크기를 그 크기의 값으로 하고 모서리는 높이의 절반으로 한다.
+- 카드: 모서리 20dp. 이미지 영역은 각 카드의 설명에 따라 위쪽·아래쪽·앞쪽·뒤쪽·배경 전체 중 한 곳에 배치한다(배경일 때는 텍스트 쪽에서 스크림을 넣는다. 밝은 텍스트에는 검정, 어두운 텍스트에는 흰색 페이드). 이미지는 비율을 유지한 채 가운데를 기준으로 잘라 영역을 채운다. 채움은 surfaceContainerHighest, 돌출은 surfaceContainerLow와 Level 1 그림자, 윤곽선은 1dp outlineVariant 테두리를 사용한다. 제목 titleMedium, 본문 bodyMedium. 안쪽 여백 20dp, 제목과 본문 사이 4dp, 이미지와 텍스트 사이 12dp.
+- 내비게이션 바: 높이 80dp, 배경 surfaceContainer. 선택 항목은 secondaryContainer 알약 표시기(64×32dp), 채운 아이콘과 labelMedium 레이블로 표시한다.
+
+## 전체 지침
+- 화면의 목적에서 앱의 종류를 판단하고, 스케치에 없더라도 그 종류의 앱에 일반적으로 필요한 기능(만들기, 목록, 상세, 편집, 삭제, 검색, 설정 등)을 구현한다.
+- 데이터를 실제 데이터로 취급한다. 사용자가 만든 데이터는 브라우저(IndexedDB 등)에 저장해 새로고침 후에도 유지한다. 더미나 샘플 데이터는 넣지 않고 데이터가 없으면 빈 상태를 표시한다. 입력을 검증하고 실패와 삭제는 적절히 확인하거나 알린다.
+- 스케치에 없는 동작은 화면 목적과 부품 레이블을 바탕으로 보완한다. 동작이 지정되지 않은 버튼이나 항목도 레이블에 맞는 동작(저장, 보내기, 상세 화면 열기 등)을 수행해야 한다.
+- 레이아웃은 의도한 순서, 그룹, 상대 위치를 유지하되 크기와 간격은 내용에 맞게 조정할 수 있다. 실제 기기에서 깨진다면 스케치 일치보다 정상 동작을 우선한다.
+- Material Web의 표준 컴포넌트를 사용하고 라이브러리에 있는 부품을 직접 그리지 않는다.
+- 색상은 하드코딩하지 말고 위 색상 구성의 역할 이름(primary, surfaceContainer 등)으로 참조한다.
+- 화면 가장자리는 16dp, 부품 사이는 8~16dp를 기본으로 하고 M3 글꼴 스타일(titleLarge, bodyMedium 등)을 사용한다.
+- '한 행에 배치'한 부품은 하나의 Row(가로 컨테이너)에서 같은 줄에 두고 세로로 쌓거나 줄 바꿈하지 않는다. 행 높이는 가장 높은 부품에 맞추고 나머지는 세로 중앙 정렬한다.
+- '내부에 겹쳐 배치'한 부품은 해당 컨테이너(상자 또는 카드)를 배경으로 하는 Box 위에 그린다. 이 겹침은 의도된 것이므로 분리하거나 순서를 바꾸지 않으며 나중에 설명된 항목을 앞에 그린다.
+- 탭 가능한 부품에는 리플과 약한 축소 피드백을 준다. '뒤로'는 진입 전환을 반대로 재생하고 시스템 뒤로 제스처나 버튼도 같은 동작을 수행한다.
+- 아이콘은 Material Symbols Rounded를 사용한다.
+- 브라우저 동작 검증은 필요 없다. 구현 후 production build를 실행하고 그 출력을 결과물로 제공한다.
+- 주요 로직에 단위 테스트를 작성하고 모두 통과하는 상태로 제출한다.
+- 라이트와 다크 색상 스킴을 모두 지원하고 시스템 설정을 따른다."
+`;
+
+exports[`golden prompt > writes one screen of it in zh for android 1`] = `
+"请用 Material 3 Expressive 的设计实现“Home”屏幕。A small app for logging the coffee you brew。
+目标为竖屏手机（412×892dp），同时支持浅色和深色模式，并跟随设备的系统设置切换。
+实现目标是 Android（原生应用）。
+下面的屏幕结构是传达意图的草图，不是最终规格。不要把它当静态图片照搬，而要做成这类应用通常应具备的功能齐全、真正可用的成品。
+
+## 配色
+主题为 Purple 系。请在Material 3 的浅色和深色配色方案中设置以下颜色，UI 的所有颜色都通过这些角色引用。
+浅色配色：
+- primary #6750A4 / onPrimary #FFFFFF / primaryContainer #EADDFF / onPrimaryContainer #21005D
+- secondary #635A75 / secondaryContainer #E8DEF8 / onSecondaryContainer #1D192B / tertiaryContainer #FFD8E4 / onTertiaryContainer #31111D
+- surface #FEF7FF / surfaceContainerLow #F7F2FA / surfaceContainer #F3EDF7 / surfaceContainerHigh #ECE6F0 / surfaceContainerHighest #E6E0E9
+- onSurface #1D1B20 / onSurfaceVariant #49454F / outline #79747E / outlineVariant #CAC4D0
+- inverseSurface #322F35 / inverseOnSurface #F5EFF7 / inversePrimary #D0BCFF
+- error #B3261E / onError #FFFFFF / errorContainer #F9DEDC / onErrorContainer #410E0B
+深色配色：
+- primary #D2BCFC / onPrimary #32226F / primaryContainer #4C3889 / onPrimaryContainer #E9DDFF
+- secondary #CDC1E1 / secondaryContainer #4B425D / onSecondaryContainer #E9DDFD / tertiaryContainer #6C3644 / onTertiaryContainer #FDDAE1
+- surface #141317 / surfaceContainerLow #1C1B1F / surfaceContainer #201F23 / surfaceContainerHigh #2B292D / surfaceContainerHighest #363438
+- onSurface #E4E1E7 / onSurfaceVariant #C9C4D1 / outline #938F9B / outlineVariant #494550
+- inverseSurface #E4E1E7 / inverseOnSurface #313034 / inversePrimary #6750A4
+- error #F2B8B5 / onError #601410 / errorContainer #8C1D18 / onErrorContainer #F9DEDC
+
+## 形状、字体与动效
+- 圆角沿用 M3 Expressive 的默认值（按钮为胶囊形，卡片 20dp，对话框 28dp）。
+- 字体使用 Roboto。排版使用 M3 的标准字重。
+- 动效使用 MotionScheme.standard()：屏幕过渡和状态变化平滑、不回弹。
+
+## 屏幕结构
+The screen the app opens on。
+“Home”屏幕从上到下依次如下（重叠的组件会特别说明）：
+- 上部放置标题为“Home”的顶部应用栏，左侧是 menu，右侧是 search 图标按钮。
+- 中部靠左放置由“Open”(填充)“Star”(色调)这 2 个按钮横向相连组成的按钮组。
+- 中部放置填充卡片。顶部是 https://example.com/photo.png 的图片（高 120dp），标题“Espresso”，正文“A short description of the picture”。
+- 下部放置4个项目的导航栏（“首页”(home)、“搜索”(search)、“收藏”(favorite)、“设置”(settings)，“搜索”为选中状态）。
+
+## 行为与屏幕跳转
+- “Open”按钮：点击后以从右侧滑入的方式跳转到“Home wide”屏幕。
+- “Star”按钮：做成每次点击都切换开/关状态的切换按钮（开启时文字变为“Starred”、图标变为 star、样式变为填充）。
+- “Home”屏幕：向左滑动时跟随手指移动并以从右侧滑入的方式跳转到“Home wide”屏幕。
+
+## 各组件的样式
+以下是所用组件的参考。数值均为 M3 Expressive 的标准值，能用标准组件实现的就交给标准组件，并可根据内容适当调整。
+- 顶部应用栏：高 64dp，背景为 surface。背景延伸到状态栏后面，并按系统内边距在顶部留出空间。标题用 titleLarge，左右图标按钮 48dp。滚动时变为 surfaceContainer 的标准行为即可。指定为中号／大号的应用栏是 M3 的 flexible top app bar：高 112dp／152dp，图标位于顶部 64dp 一行，标题单独占底部一行（headlineSmall／headlineMedium），滚动时收缩为小号应用栏。
+- 按钮：中号，高 56dp，完全圆角（胶囊形）。填充用 primary，色调用 secondaryContainer，描边用 1dp 的 outline 边框。横向相连的按钮组以 3dp 间距排列，只把相邻的内侧圆角缩小到 8dp，外侧保持圆角（M3 Expressive 的 Connected button group）。指定了高度的按钮遵循 M3 尺寸（XS 32dp / S 40dp / M 56dp / L 96dp / XL 136dp）：左右内边距、文字和图标取该尺寸的值，圆角为高度的一半。
+- 卡片：圆角 20dp。图片区域按每张卡片的描述放在顶部、底部、左侧、右侧或作为整卡背景（背景时从文字一侧加渐变遮罩：浅色文字用黑色，深色文字用白色）。图片保持宽高比并居中裁剪以填满区域。填充用 surfaceContainerHighest，浮起用 surfaceContainerLow 加 Level 1 阴影，描边用 1dp 的 outlineVariant 边框。标题用 titleMedium，正文用 bodyMedium。内边距 20dp，标题与正文间距 4dp，图片与文字间距 12dp。
+- 导航栏：高 80dp，背景为 surfaceContainer。背景延伸到屏幕底部的手势导航区域，并按系统内边距在底部留出空间。选中项用 secondaryContainer 的胶囊指示器（宽 64dp、高 32dp）表示，图标为填充样式，标签用 labelMedium。
+
+## 整体原则
+- 先根据屏幕目的判断这是什么类型的应用，并实现该类应用通常应有的功能（新建、列表、详情、编辑、删除、搜索、设置等，视情况而定），即使草图中没有画出。
+- 把数据当作真实数据处理：用户创建的数据要持久化到设备（Room、DataStore 等），重启后仍保留。不要放入虚拟或示例数据，没有数据时显示空状态提示。校验输入，删除和失败要有适当的确认或提示。
+- 草图没有写明的行为，根据屏幕目的和组件标签补全。未指定行为的按钮或项目要实现与其标签相符的操作（保存、发送、打开详情页等），不要什么都不做。
+- 布局只需保持意图（顺序、分组、相对位置），尺寸和间距可根据内容调整。若在真机上会出问题，宁可能用也不要死守草图。
+- 组件使用 Jetpack Compose material3（包含 Expressive API 的最新版） 的标准组件，库里已有的组件不要自行绘制。
+- 颜色必须通过上面配色方案的角色名（primary、surfaceContainer 等）引用，不要写死颜色值。
+- 屏幕边缘留 16dp，组件之间 8〜16dp，排版使用 M3 的字体样式（titleLarge、bodyMedium 等）。
+- 写明“横向排成一行”的组件必须放进同一个 Row（横向容器）并在同一行显示，不要竖着堆叠或换行。行高以最高的组件为准，其余组件垂直居中。
+- 写明“内部叠放”的组件要绘制在该容器（容器框或卡片）之上（以容器为背景的 Box）。这种叠放是有意为之，不要因布局原因拆开或调整顺序。前后关系按描述顺序，后写的在前面。
+- 可点击的组件加涟漪和轻微缩放反馈。“返回”反向播放进入时的过渡动画，系统返回手势／返回键也要做同样的效果。
+- 图标使用 Material Symbols Rounded。
+- 不需要在模拟器或真机上验证。实现完成后生成已签名的 release APK 作为交付物。
+- 为主要逻辑编写单元测试，并在全部通过的状态下交付。
+- 同时支持浅色与深色配色方案，并跟随系统设置。"
+`;
+
+exports[`golden prompt > writes one screen of it in zh for web 1`] = `
+"请用 Material 3 Expressive 的设计实现“Home”屏幕。A small app for logging the coffee you brew。
+目标为竖屏手机（412×892dp），同时支持浅色和深色模式，并跟随设备的系统设置切换。
+实现目标是 Web（在浏览器中运行的应用）。
+下面的屏幕结构是传达意图的草图，不是最终规格。不要把它当静态图片照搬，而要做成这类应用通常应具备的功能齐全、真正可用的成品。
+
+## 配色
+主题为 Purple 系。请在Material 3 的浅色和深色配色方案中设置以下颜色，UI 的所有颜色都通过这些角色引用。
+浅色配色：
+- primary #6750A4 / onPrimary #FFFFFF / primaryContainer #EADDFF / onPrimaryContainer #21005D
+- secondary #635A75 / secondaryContainer #E8DEF8 / onSecondaryContainer #1D192B / tertiaryContainer #FFD8E4 / onTertiaryContainer #31111D
+- surface #FEF7FF / surfaceContainerLow #F7F2FA / surfaceContainer #F3EDF7 / surfaceContainerHigh #ECE6F0 / surfaceContainerHighest #E6E0E9
+- onSurface #1D1B20 / onSurfaceVariant #49454F / outline #79747E / outlineVariant #CAC4D0
+- inverseSurface #322F35 / inverseOnSurface #F5EFF7 / inversePrimary #D0BCFF
+- error #B3261E / onError #FFFFFF / errorContainer #F9DEDC / onErrorContainer #410E0B
+深色配色：
+- primary #D2BCFC / onPrimary #32226F / primaryContainer #4C3889 / onPrimaryContainer #E9DDFF
+- secondary #CDC1E1 / secondaryContainer #4B425D / onSecondaryContainer #E9DDFD / tertiaryContainer #6C3644 / onTertiaryContainer #FDDAE1
+- surface #141317 / surfaceContainerLow #1C1B1F / surfaceContainer #201F23 / surfaceContainerHigh #2B292D / surfaceContainerHighest #363438
+- onSurface #E4E1E7 / onSurfaceVariant #C9C4D1 / outline #938F9B / outlineVariant #494550
+- inverseSurface #E4E1E7 / inverseOnSurface #313034 / inversePrimary #6750A4
+- error #F2B8B5 / onError #601410 / errorContainer #8C1D18 / onErrorContainer #F9DEDC
+
+## 形状、字体与动效
+- 圆角沿用 M3 Expressive 的默认值（按钮为胶囊形，卡片 20dp，对话框 28dp）。
+- 字体使用 Roboto。排版使用 M3 的标准字重。
+- 动效使用 MotionScheme.standard()：屏幕过渡和状态变化平滑、不回弹。
+
+## 屏幕结构
+The screen the app opens on。
+“Home”屏幕从上到下依次如下（重叠的组件会特别说明）：
+- 上部放置标题为“Home”的顶部应用栏，左侧是 menu，右侧是 search 图标按钮。
+- 中部靠左放置由“Open”(填充)“Star”(色调)这 2 个按钮横向相连组成的按钮组。
+- 中部放置填充卡片。顶部是 https://example.com/photo.png 的图片（高 120dp），标题“Espresso”，正文“A short description of the picture”。
+- 下部放置4个项目的导航栏（“首页”(home)、“搜索”(search)、“收藏”(favorite)、“设置”(settings)，“搜索”为选中状态）。
+
+## 行为与屏幕跳转
+- “Open”按钮：点击后以从右侧滑入的方式跳转到“Home wide”屏幕。
+- “Star”按钮：做成每次点击都切换开/关状态的切换按钮（开启时文字变为“Starred”、图标变为 star、样式变为填充）。
+- “Home”屏幕：向左滑动时跟随手指移动并以从右侧滑入的方式跳转到“Home wide”屏幕。
+
+## 各组件的样式
+以下是所用组件的参考。数值均为 M3 Expressive 的标准值，能用标准组件实现的就交给标准组件，并可根据内容适当调整。
+- 顶部应用栏：高 64dp，背景为 surface。标题用 titleLarge，左右图标按钮 48dp。滚动时变为 surfaceContainer 的标准行为即可。
+- 按钮：中号，高 56dp，完全圆角（胶囊形）。填充用 primary，色调用 secondaryContainer，描边用 1dp 的 outline 边框。横向相连的按钮组以 3dp 间距排列，只把相邻的内侧圆角缩小到 8dp，外侧保持圆角（M3 Expressive 的 Connected button group）。指定了高度的按钮遵循 M3 尺寸（XS 32dp / S 40dp / M 56dp / L 96dp / XL 136dp）：左右内边距、文字和图标取该尺寸的值，圆角为高度的一半。
+- 卡片：圆角 20dp。图片区域按每张卡片的描述放在顶部、底部、左侧、右侧或作为整卡背景（背景时从文字一侧加渐变遮罩：浅色文字用黑色，深色文字用白色）。图片保持宽高比并居中裁剪以填满区域。填充用 surfaceContainerHighest，浮起用 surfaceContainerLow 加 Level 1 阴影，描边用 1dp 的 outlineVariant 边框。标题用 titleMedium，正文用 bodyMedium。内边距 20dp，标题与正文间距 4dp，图片与文字间距 12dp。
+- 导航栏：高 80dp，背景为 surfaceContainer。选中项用 secondaryContainer 的胶囊指示器（宽 64dp、高 32dp）表示，图标为填充样式，标签用 labelMedium。
+
+## 整体原则
+- 先根据屏幕目的判断这是什么类型的应用，并实现该类应用通常应有的功能（新建、列表、详情、编辑、删除、搜索、设置等，视情况而定），即使草图中没有画出。
+- 把数据当作真实数据处理：用户创建的数据要持久化到浏览器（IndexedDB 等），重新加载后仍保留。不要放入虚拟或示例数据，没有数据时显示空状态提示。校验输入，删除和失败要有适当的确认或提示。
+- 草图没有写明的行为，根据屏幕目的和组件标签补全。未指定行为的按钮或项目要实现与其标签相符的操作（保存、发送、打开详情页等），不要什么都不做。
+- 布局只需保持意图（顺序、分组、相对位置），尺寸和间距可根据内容调整。若在真机上会出问题，宁可能用也不要死守草图。
+- 组件使用 Material Web 的标准组件，库里已有的组件不要自行绘制。
+- 颜色必须通过上面配色方案的角色名（primary、surfaceContainer 等）引用，不要写死颜色值。
+- 屏幕边缘留 16dp，组件之间 8〜16dp，排版使用 M3 的字体样式（titleLarge、bodyMedium 等）。
+- 写明“横向排成一行”的组件必须放进同一个 Row（横向容器）并在同一行显示，不要竖着堆叠或换行。行高以最高的组件为准，其余组件垂直居中。
+- 写明“内部叠放”的组件要绘制在该容器（容器框或卡片）之上（以容器为背景的 Box）。这种叠放是有意为之，不要因布局原因拆开或调整顺序。前后关系按描述顺序，后写的在前面。
+- 可点击的组件加涟漪和轻微缩放反馈。“返回”反向播放进入时的过渡动画，系统返回手势／返回键也要做同样的效果。
+- 图标使用 Material Symbols Rounded。
+- 不需要在浏览器上验证。实现完成后运行 production build 并提供其输出作为交付物。
+- 为主要逻辑编写单元测试，并在全部通过的状态下交付。
+- 同时支持浅色与深色配色方案，并跟随系统设置。"
+`;
+
+exports[`golden prompt > writes the whole document in en for android 1`] = `
+"Please implement Brew Log in the Material 3 Expressive design language. A small app for logging the coffee you brew.
+Target both a portrait phone (412×892) and a landscape tablet (1280×800); screens that share a name are one screen at two widths, so build them responsively, supporting both light and dark mode and following the device's system setting.
+Build it for Android, as a native app.
+The layout below is a rough sketch that conveys intent, not a finished spec. Do not reproduce it as a static picture; build the complete, usable app that this kind of product is normally expected to be.
+
+## Colors
+The theme is Purple. Set these on the Material 3 light and dark color schemes and reference every UI color through its role.
+Light scheme:
+- primary #6750A4 / onPrimary #FFFFFF / primaryContainer #EADDFF / onPrimaryContainer #21005D
+- secondary #635A75 / secondaryContainer #E8DEF8 / onSecondaryContainer #1D192B / tertiaryContainer #FFD8E4 / onTertiaryContainer #31111D
+- surface #FEF7FF / surfaceContainerLow #F7F2FA / surfaceContainer #F3EDF7 / surfaceContainerHigh #ECE6F0 / surfaceContainerHighest #E6E0E9
+- onSurface #1D1B20 / onSurfaceVariant #49454F / outline #79747E / outlineVariant #CAC4D0
+- inverseSurface #322F35 / inverseOnSurface #F5EFF7 / inversePrimary #D0BCFF
+- error #B3261E / onError #FFFFFF / errorContainer #F9DEDC / onErrorContainer #410E0B
+Dark scheme:
+- primary #D2BCFC / onPrimary #32226F / primaryContainer #4C3889 / onPrimaryContainer #E9DDFF
+- secondary #CDC1E1 / secondaryContainer #4B425D / onSecondaryContainer #E9DDFD / tertiaryContainer #6C3644 / onTertiaryContainer #FDDAE1
+- surface #141317 / surfaceContainerLow #1C1B1F / surfaceContainer #201F23 / surfaceContainerHigh #2B292D / surfaceContainerHighest #363438
+- onSurface #E4E1E7 / onSurfaceVariant #C9C4D1 / outline #938F9B / outlineVariant #494550
+- inverseSurface #E4E1E7 / inverseOnSurface #313034 / inversePrimary #6750A4
+- error #F2B8B5 / onError #601410 / errorContainer #8C1D18 / onErrorContainer #F9DEDC
+
+## Shape, type and motion
+- Corners follow the M3 Expressive defaults (pill buttons, 20dp cards, 28dp dialogs).
+- Use Roboto as the typeface. Typography uses the standard M3 weights.
+- Motion uses MotionScheme.standard(): smooth transitions and state changes with no bounce.
+
+## Layout
+There are 2 screens: "Home", "Home wide".
+
+The screen the app opens on.
+The "Home" screen (phone 412×892), from top to bottom (overlapping parts are called out as such):
+- Near the top: a top app bar titled "Home" with a menu icon button on the left and search on the right.
+- In the middle, aligned left: a connected button group of 2 buttons: "Open" (filled), "Star" (tonal).
+- In the middle: a filled card with an image from https://example.com/photo.png (120dp tall) on top, the headline "Espresso" and the body "A short description of the picture".
+- Near the bottom: a navigation bar with 4 destinations: "Home" (home), "Search" (search), "Saved" (favorite), "Settings" (settings); "Search" is selected.
+
+The "Home wide" screen (desktop 1280×800), from top to bottom (overlapping parts are called out as such):
+- Along the left edge: a navigation rail with 4 destinations: "Home" (home), "Search" (search), "Saved" (favorite), "Settings" (settings); the first one is selected; WideNavigationRail, collapsed, 96dp wide; non-modal layout: reserve the current width in the layout; toggle expansion with the top menu button.
+- In the middle, aligned left: a list of 2 items, top to bottom: "Dark roast" with supporting text "Yesterday", a leading local_cafe icon, a trailing star icon; "Light roast" with supporting text "2 days ago", a leading local_cafe icon, a trailing star icon.
+- In the middle, aligned left: an outlined text field labeled "Search" with a leading search icon.
+- In the middle, aligned left: a multi-browse carousel of 4 cards (180dp tall, each card with 16dp corners, scrolling sideways).
+
+## Behavior and navigation
+- The "Open" button opens the "Home wide" screen with a slide in from the right when tapped.
+- The "Star" button is a toggle button that flips on / off with every tap (when on, the label becomes "Starred" and the icon becomes star and the style becomes filled).
+- The "Home" screen opens the "Home wide" screen with a slide in from the right when swiping left; the screen follows the finger while dragging.
+
+## Component styles
+Per-component guidance for the parts in use. The numbers are the M3 Expressive defaults: let the standard components handle whatever they already do, and adjust where the content calls for it.
+- Top app bar: 64dp tall on surface, with its background extended behind the status bar (pad the top by the system inset). Title in titleLarge, 48dp icon buttons on each side. A bar named medium or large is M3's flexible top app bar: 112dp or 152dp tall, the icons in the top 64dp row and the title on its own line at the foot (headlineSmall / headlineMedium), collapsing to the small bar on scroll. The standard tint to surfaceContainer on scroll is fine.
+- Buttons: medium size, 56dp tall, fully rounded (pill). Filled uses primary, tonal uses secondaryContainer, outlined has a 1dp outline border. A connected button group is a row with 3dp gaps where only the inner adjoining corners shrink to 8dp and the outer corners stay round (the M3 Expressive connected button group). A button given a height follows the M3 size scale (XS 32dp, S 40dp, M 56dp, L 96dp, XL 136dp): take the side padding, the label size and the icon size of that size, and keep the corner radius at half the height.
+- Cards: 20dp corners. Place each card's image area where its line says — on top, along the bottom, filling the leading or trailing side, or as a full-bleed background (a scrim fades in from the text's side: dark under light text, light under dark text). Images keep their aspect ratio and are center-cropped to fill their area. Filled uses surfaceContainerHighest, elevated uses surfaceContainerLow with a level 1 shadow, outlined has a 1dp outlineVariant border. Headline in titleMedium, body in bodyMedium. 20dp padding, 4dp between headline and body, 12dp between the image and the text.
+- Navigation bar: 80dp tall on surfaceContainer, with its background extended down through the gesture navigation area (pad the bottom by the system inset). The active destination shows a secondaryContainer pill indicator (64×32dp), a filled icon and a labelMedium label.
+- M3 Expressive navigation rail: 96dp wide when collapsed, with labels below icons. Expanded width is 220dp, with 56dp-high destinations and horizontal icon/label rows separated by 8dp. Match the existing top app bar with a surfaceContainer background in both modes, whether collapsed or expanded. The selected destination uses a secondaryContainer pill, onSecondaryContainer icon, and a label that prefers secondary. If its contrast against the actual background (surfaceContainer when collapsed, secondaryContainer when expanded) is below 4.5:1, use onSurface / onSecondaryContainer respectively. A top menu button toggles expansion. The non-modal variant sits beside the content; the modal variant overlays it with a scrim when expanded and blocks background interaction. Dismiss with a scrim tap or Escape.
+- List items: 72dp tall, 24dp leading icon (on a 40dp primaryContainer circle unless stated), headline in bodyLarge, supporting text in bodyMedium on onSurfaceVariant, on the specified background role (surfaceContainerLow unless stated). A stacked list is a vertical run with 3dp gaps, 28dp outer corners and 8dp inner corners (the M3 Expressive list treatment).
+- Text fields: 56dp tall. Outlined has 16dp corners and an outline border; filled sits on surfaceContainerHighest with an underline. On focus the label floats up and the border becomes 2dp primary. Supporting text goes underneath in bodySmall.
+- Carousel: the M3 Carousel (HorizontalMultiBrowseCarousel / HorizontalUncontainedCarousel in Compose; a sideways-scrolling row of cards on the web). Cards are containers with 16dp corners; multi-browse and hero show the first card large and the rest smaller, uncontained shows every card at one width, full-screen gives one card the row. It runs edge to edge with a 16dp start margin and 8dp between cards. A card's title sits along its bottom edge.
+
+## General guidance
+- Work out what kind of app this is from the purpose of the screens, and implement the features such an app is normally expected to have (create, list, detail, edit, delete, search, settings, whichever apply) even where the sketch does not show them.
+- Treat the data as real. Persist what the user creates on the device (Room, DataStore or similar) so it survives restarts. Do not ship dummy or sample data; show an empty state when there is nothing yet. Validate input, and confirm or report failures and deletions appropriately.
+- Fill in behavior the sketch leaves out from the purpose of the screen and the labels of the parts. A button or item with no behavior specified should do what its label implies (save, send, open a detail screen, and so on), never nothing.
+- The layout only needs to keep the intent (order, grouping, relative placement); sizes and spacing may be adjusted to fit the content. If something would break on a device, prefer working over matching the sketch.
+- Use the standard components from Jetpack Compose material3 (latest, including the Expressive APIs); do not custom-draw parts the library provides.
+- Always reference colors through the scheme roles above (primary, surfaceContainer, …) instead of hard-coded values.
+- Keep 16dp screen margins and 8–16dp between parts, and use the M3 type styles (titleLarge, bodyMedium, …).
+- Parts described as "in one row" must share a single Row (horizontal container) on the same line; never stack them vertically or wrap them. The row is as tall as its tallest part and the others are vertically centered in it.
+- Parts described as "layered inside" a container are drawn on top of that container (a Box with the container as its background). The overlap is intentional: do not separate or reorder them for layout reasons. Later items in the description are drawn in front of earlier ones.
+- Give every tappable part ripple plus a slight press-scale. "Back" plays the entry transition in reverse, and the system back gesture / button must do the same.
+- Use Material Symbols Rounded for icons.
+- Do not verify on an emulator or a device. When the implementation is done, produce a signed release APK as the deliverable.
+- Write unit tests for the main logic and hand it over with all of them passing.
+- Support both the light and the dark color scheme, following the system setting."
+`;
+
+exports[`golden prompt > writes the whole document in en for web 1`] = `
+"Please implement Brew Log in the Material 3 Expressive design language. A small app for logging the coffee you brew.
+Target both a portrait phone (412×892) and a desktop browser viewport (1280×800); screens that share a name are one screen at two widths, so build them responsively, supporting both light and dark mode and following the device's system setting.
+Build it for the web, as an app that runs in the browser.
+The layout below is a rough sketch that conveys intent, not a finished spec. Do not reproduce it as a static picture; build the complete, usable app that this kind of product is normally expected to be.
+
+## Colors
+The theme is Purple. Set these on the Material 3 light and dark color schemes and reference every UI color through its role.
+Light scheme:
+- primary #6750A4 / onPrimary #FFFFFF / primaryContainer #EADDFF / onPrimaryContainer #21005D
+- secondary #635A75 / secondaryContainer #E8DEF8 / onSecondaryContainer #1D192B / tertiaryContainer #FFD8E4 / onTertiaryContainer #31111D
+- surface #FEF7FF / surfaceContainerLow #F7F2FA / surfaceContainer #F3EDF7 / surfaceContainerHigh #ECE6F0 / surfaceContainerHighest #E6E0E9
+- onSurface #1D1B20 / onSurfaceVariant #49454F / outline #79747E / outlineVariant #CAC4D0
+- inverseSurface #322F35 / inverseOnSurface #F5EFF7 / inversePrimary #D0BCFF
+- error #B3261E / onError #FFFFFF / errorContainer #F9DEDC / onErrorContainer #410E0B
+Dark scheme:
+- primary #D2BCFC / onPrimary #32226F / primaryContainer #4C3889 / onPrimaryContainer #E9DDFF
+- secondary #CDC1E1 / secondaryContainer #4B425D / onSecondaryContainer #E9DDFD / tertiaryContainer #6C3644 / onTertiaryContainer #FDDAE1
+- surface #141317 / surfaceContainerLow #1C1B1F / surfaceContainer #201F23 / surfaceContainerHigh #2B292D / surfaceContainerHighest #363438
+- onSurface #E4E1E7 / onSurfaceVariant #C9C4D1 / outline #938F9B / outlineVariant #494550
+- inverseSurface #E4E1E7 / inverseOnSurface #313034 / inversePrimary #6750A4
+- error #F2B8B5 / onError #601410 / errorContainer #8C1D18 / onErrorContainer #F9DEDC
+
+## Shape, type and motion
+- Corners follow the M3 Expressive defaults (pill buttons, 20dp cards, 28dp dialogs).
+- Use Roboto as the typeface. Typography uses the standard M3 weights.
+- Motion uses MotionScheme.standard(): smooth transitions and state changes with no bounce.
+
+## Layout
+There are 2 screens: "Home", "Home wide".
+
+The screen the app opens on.
+The "Home" screen (phone 412×892), from top to bottom (overlapping parts are called out as such):
+- Near the top: a top app bar titled "Home" with a menu icon button on the left and search on the right.
+- In the middle, aligned left: a connected button group of 2 buttons: "Open" (filled), "Star" (tonal).
+- In the middle: a filled card with an image from https://example.com/photo.png (120dp tall) on top, the headline "Espresso" and the body "A short description of the picture".
+- Near the bottom: a navigation bar with 4 destinations: "Home" (home), "Search" (search), "Saved" (favorite), "Settings" (settings); "Search" is selected.
+
+The "Home wide" screen (desktop 1280×800), from top to bottom (overlapping parts are called out as such):
+- Along the left edge: a navigation rail with 4 destinations: "Home" (home), "Search" (search), "Saved" (favorite), "Settings" (settings); the first one is selected; WideNavigationRail, collapsed, 96dp wide; non-modal layout: reserve the current width in the layout; toggle expansion with the top menu button.
+- In the middle, aligned left: a list of 2 items, top to bottom: "Dark roast" with supporting text "Yesterday", a leading local_cafe icon, a trailing star icon; "Light roast" with supporting text "2 days ago", a leading local_cafe icon, a trailing star icon.
+- In the middle, aligned left: an outlined text field labeled "Search" with a leading search icon.
+- In the middle, aligned left: a multi-browse carousel of 4 cards (180dp tall, each card with 16dp corners, scrolling sideways).
+
+## Behavior and navigation
+- The "Open" button opens the "Home wide" screen with a slide in from the right when tapped.
+- The "Star" button is a toggle button that flips on / off with every tap (when on, the label becomes "Starred" and the icon becomes star and the style becomes filled).
+- The "Home" screen opens the "Home wide" screen with a slide in from the right when swiping left; the screen follows the finger while dragging.
+
+## Component styles
+Per-component guidance for the parts in use. The numbers are the M3 Expressive defaults: let the standard components handle whatever they already do, and adjust where the content calls for it.
+- Top app bar: 64dp tall on surface. Title in titleLarge, 48dp icon buttons on each side. The standard tint to surfaceContainer on scroll is fine.
+- Buttons: medium size, 56dp tall, fully rounded (pill). Filled uses primary, tonal uses secondaryContainer, outlined has a 1dp outline border. A connected button group is a row with 3dp gaps where only the inner adjoining corners shrink to 8dp and the outer corners stay round (the M3 Expressive connected button group). A button given a height follows the M3 size scale (XS 32dp, S 40dp, M 56dp, L 96dp, XL 136dp): take the side padding, the label size and the icon size of that size, and keep the corner radius at half the height.
+- Cards: 20dp corners. Place each card's image area where its line says — on top, along the bottom, filling the leading or trailing side, or as a full-bleed background (a scrim fades in from the text's side: dark under light text, light under dark text). Images keep their aspect ratio and are center-cropped to fill their area. Filled uses surfaceContainerHighest, elevated uses surfaceContainerLow with a level 1 shadow, outlined has a 1dp outlineVariant border. Headline in titleMedium, body in bodyMedium. 20dp padding, 4dp between headline and body, 12dp between the image and the text.
+- Navigation bar: 80dp tall on surfaceContainer. The active destination shows a secondaryContainer pill indicator (64×32dp), a filled icon and a labelMedium label.
+- M3 Expressive navigation rail: 96dp wide when collapsed, with labels below icons. Expanded width is 220dp, with 56dp-high destinations and horizontal icon/label rows separated by 8dp. Match the existing top app bar with a surfaceContainer background in both modes, whether collapsed or expanded. The selected destination uses a secondaryContainer pill, onSecondaryContainer icon, and a label that prefers secondary. If its contrast against the actual background (surfaceContainer when collapsed, secondaryContainer when expanded) is below 4.5:1, use onSurface / onSecondaryContainer respectively. A top menu button toggles expansion. The non-modal variant sits beside the content; the modal variant overlays it with a scrim when expanded and blocks background interaction. Dismiss with a scrim tap or Escape.
+- List items: 72dp tall, 24dp leading icon (on a 40dp primaryContainer circle unless stated), headline in bodyLarge, supporting text in bodyMedium on onSurfaceVariant, on the specified background role (surfaceContainerLow unless stated). A stacked list is a vertical run with 3dp gaps, 28dp outer corners and 8dp inner corners (the M3 Expressive list treatment).
+- Text fields: 56dp tall. Outlined has 16dp corners and an outline border; filled sits on surfaceContainerHighest with an underline. On focus the label floats up and the border becomes 2dp primary. Supporting text goes underneath in bodySmall.
+- Carousel: the M3 Carousel (HorizontalMultiBrowseCarousel / HorizontalUncontainedCarousel in Compose; a sideways-scrolling row of cards on the web). Cards are containers with 16dp corners; multi-browse and hero show the first card large and the rest smaller, uncontained shows every card at one width, full-screen gives one card the row. It runs edge to edge with a 16dp start margin and 8dp between cards. A card's title sits along its bottom edge.
+
+## General guidance
+- Work out what kind of app this is from the purpose of the screens, and implement the features such an app is normally expected to have (create, list, detail, edit, delete, search, settings, whichever apply) even where the sketch does not show them.
+- Treat the data as real. Persist what the user creates in the browser (IndexedDB or similar) so it survives reloads. Do not ship dummy or sample data; show an empty state when there is nothing yet. Validate input, and confirm or report failures and deletions appropriately.
+- Fill in behavior the sketch leaves out from the purpose of the screen and the labels of the parts. A button or item with no behavior specified should do what its label implies (save, send, open a detail screen, and so on), never nothing.
+- The layout only needs to keep the intent (order, grouping, relative placement); sizes and spacing may be adjusted to fit the content. If something would break on a device, prefer working over matching the sketch.
+- Use the standard components from Material Web; do not custom-draw parts the library provides.
+- Always reference colors through the scheme roles above (primary, surfaceContainer, …) instead of hard-coded values.
+- Keep 16dp screen margins and 8–16dp between parts, and use the M3 type styles (titleLarge, bodyMedium, …).
+- Parts described as "in one row" must share a single Row (horizontal container) on the same line; never stack them vertically or wrap them. The row is as tall as its tallest part and the others are vertically centered in it.
+- Parts described as "layered inside" a container are drawn on top of that container (a Box with the container as its background). The overlap is intentional: do not separate or reorder them for layout reasons. Later items in the description are drawn in front of earlier ones.
+- Give every tappable part ripple plus a slight press-scale. "Back" plays the entry transition in reverse, and the system back gesture / button must do the same.
+- Use Material Symbols Rounded for icons.
+- Do not verify in a browser. When the implementation is done, run the production build and provide its output as the deliverable.
+- Write unit tests for the main logic and hand it over with all of them passing.
+- Support both the light and the dark color scheme, following the system setting."
+`;
+
+exports[`golden prompt > writes the whole document in ja for android 1`] = `
+"Brew Logを Material 3 Expressive のデザインで実装してください。A small app for logging the coffee you brew。
+スマホの縦画面（412×892）と横向きのタブレット画面（1280×800）の両方を想定し、同じ名前の画面は 1 つの画面の 2 つの幅として、レスポンシブに実装します。ライトモードとダークモードの両方に対応し、端末のシステム設定に従って切り替えます。
+実装先は Android（ネイティブアプリ）です。
+下の画面構成は、意図を伝えるためのラフスケッチです。完成図の仕様ではないので、静止画のように再現するのではなく、この種のアプリとして普通に期待される機能を一通り備えた、実際に使える完成品として仕上げてください。
+
+## カラー
+テーマは Purple 系です。Material 3 のライトとダークのカラースキームに次の色を設定し、UI の色はすべてこのロール経由で参照してください。
+ライトスキーム:
+- primary #6750A4 / onPrimary #FFFFFF / primaryContainer #EADDFF / onPrimaryContainer #21005D
+- secondary #635A75 / secondaryContainer #E8DEF8 / onSecondaryContainer #1D192B / tertiaryContainer #FFD8E4 / onTertiaryContainer #31111D
+- surface #FEF7FF / surfaceContainerLow #F7F2FA / surfaceContainer #F3EDF7 / surfaceContainerHigh #ECE6F0 / surfaceContainerHighest #E6E0E9
+- onSurface #1D1B20 / onSurfaceVariant #49454F / outline #79747E / outlineVariant #CAC4D0
+- inverseSurface #322F35 / inverseOnSurface #F5EFF7 / inversePrimary #D0BCFF
+- error #B3261E / onError #FFFFFF / errorContainer #F9DEDC / onErrorContainer #410E0B
+ダークスキーム:
+- primary #D2BCFC / onPrimary #32226F / primaryContainer #4C3889 / onPrimaryContainer #E9DDFF
+- secondary #CDC1E1 / secondaryContainer #4B425D / onSecondaryContainer #E9DDFD / tertiaryContainer #6C3644 / onTertiaryContainer #FDDAE1
+- surface #141317 / surfaceContainerLow #1C1B1F / surfaceContainer #201F23 / surfaceContainerHigh #2B292D / surfaceContainerHighest #363438
+- onSurface #E4E1E7 / onSurfaceVariant #C9C4D1 / outline #938F9B / outlineVariant #494550
+- inverseSurface #E4E1E7 / inverseOnSurface #313034 / inversePrimary #6750A4
+- error #F2B8B5 / onError #601410 / errorContainer #8C1D18 / onErrorContainer #F9DEDC
+
+## 形・文字・動き
+- 角丸は M3 Expressive の標準値のまま（ボタンはピル型、カードは 20dp、ダイアログは 28dp）。
+- 書体は Roboto を使う。タイポグラフィは M3 の標準ウェイト。
+- モーションは MotionScheme.standard()。画面遷移や状態変化は弾まない滑らかな動きにする。
+
+## 画面構成
+画面は 2 つあり、「Home」、「Home wide」です。
+
+The screen the app opens on。
+「Home」画面（スマホ 412×892）は上から順に次の通りです。重なっている部品はその旨を書いています。
+- 上部にタイトル「Home」のトップアプリバー。左に menu、右に search のアイコンボタンを置きます。
+- 中央付近に左寄せで「Open」(塗りつぶし)「Star」(トーナル)の2つのボタンが横に連結したボタングループを置きます。
+- 中央付近に塗りつぶしカード。上部に https://example.com/photo.png の画像（高さ 120dp）、見出し「Espresso」、本文「A short description of the picture」を置きます。
+- 下部に4項目のナビゲーションバー（「ホーム」(home)、「検索」(search)、「保存」(favorite)、「設定」(settings)。「検索」が選択状態）を置きます。
+
+「Home wide」画面（デスクトップ 1280×800）は上から順に次の通りです。重なっている部品はその旨を書いています。
+- 左端に4項目のナビゲーションレール（「ホーム」(home)、「検索」(search)、「保存」(favorite)、「設定」(settings)。最初の項目が選択状態）。WideNavigationRail、折りたたみ状態、幅 96dp。非モーダル型：現在の幅だけレイアウトを占有。上部のメニューボタンで展開・折りたたみを切り替える。
+- 中央付近に左寄せで2項目のリスト。上から 「Dark roast」（サブテキスト「Yesterday」）、先頭に local_cafe アイコン、末尾に star、「Light roast」（サブテキスト「2 days ago」）、先頭に local_cafe アイコン、末尾に starを置きます。
+- 中央付近に左寄せでラベル「Search」のアウトラインテキスト入力（先頭に search アイコン）を置きます。
+- 中央付近に左寄せでマルチブラウズレイアウトのカルーセル（カード 4 枚、高さ 180dp、各カードは角丸 16dp、横スクロール）を置きます。
+
+## 振る舞いと画面遷移
+- 「Open」ボタンは、タップすると「Home wide」画面へ右からのスライドで遷移する。
+- 「Star」ボタンは、タップするたびにオン／オフが切り替わるトグルボタンにする（オンのときはラベルが「Starred」に変わる、アイコンが star に変わる、スタイルが塗りつぶしに変わる）。
+- 「Home」画面は、左へスワイプすると指の動きに追従して「Home wide」画面へ右からのスライドで遷移する。
+
+## 各部品のスタイル
+使っている部品ごとの目安です。数値は M3 Expressive の標準値なので、標準コンポーネントで実現できるものは標準に任せ、内容に合わせて調整して構いません。
+- トップアプリバー: 高さ 64dp、背景は surface。背景はステータスバーの後ろまで伸ばし、その分（システムインセット）だけ上に余白を取る。タイトルは titleLarge、左右のアイコンボタンは 48dp。スクロール時に surfaceContainer へ色が変わる標準の挙動でよい。ミディアム／ラージと指定されたバーは M3 の flexible top app bar で、高さ 112dp／152dp、アイコンは上 64dp の列に、タイトルは下段に独立した行（headlineSmall／headlineMedium）で置き、スクロールで小さいバーに縮む。
+- ボタン: 高さ 56dp のミディアムサイズで、角は完全な丸（ピル型）。塗りつぶしは primary、トーナルは secondaryContainer、アウトラインは outline の 1dp 枠。横に連結したボタングループは 3dp の隙間で並べ、隣り合う内側の角だけ 8dp に小さくし、外側の角は丸のままにする（M3 Expressive の Connected button group）。高さを指定されたボタンは M3 のサイズ（XS 32dp / S 40dp / M 56dp / L 96dp / XL 136dp）に従い、左右の余白・文字・アイコンをそのサイズのものにし、角丸は高さの半分にする。
+- カード: 角丸 20dp。画像領域は各カードの記述に従い、上部・下部・先頭側・末尾側・背景全面のいずれかに置く（背景の場合はテキストの側からスクリムをかける。明るい文字なら黒、暗い文字なら白のフェード）。画像はアスペクト比を保って中央でクロップし、領域いっぱいに表示する。塗りつぶしは surfaceContainerHighest、エレベーテッドは surfaceContainerLow に Level 1 の影、アウトラインは outlineVariant の 1dp 枠。見出しは titleMedium、本文は bodyMedium。内側余白は 20dp、見出しと本文の間は 4dp、画像とテキストの間は 12dp。
+- ナビゲーションバー: 高さ 80dp、背景は surfaceContainer。背景は画面下端のジェスチャーナビゲーション領域まで伸ばし、その分（システムインセット）だけ下に余白を取る。選択中の項目は secondaryContainer のピル型インジケータ（幅 64dp・高さ 32dp）で示し、アイコンは塗りつぶし、ラベルは labelMedium。
+- M3 Expressive ナビゲーションレール: 折りたたみ時は幅 96dp、アイコンの下にラベル。展開時は幅 220dp、高さ 56dp の項目内でアイコンとラベルを横並びにし、間隔は 8dp。既存のトップアプリバーに合わせ、両モードの開閉状態すべてで背景は surfaceContainer。選択項目は secondaryContainer のピル型インジケータ、アイコンは onSecondaryContainer、ラベルは secondary を優先し、実際の背景（折りたたみ時は surfaceContainer、展開時は secondaryContainer）とのコントラストが 4.5:1 未満なら、それぞれ onSurface / onSecondaryContainer を使う。上部のメニューボタンで開閉する。非モーダル型は本文の横に配置し、モーダル型は展開時にスクリムとともに本文に重ね、背景操作を遮断する。スクリムのタップまたは Escape で閉じる。
+- リスト項目: 高さ 72dp、先頭アイコンは 24dp（指定がなければ primaryContainer の 40dp の円の上）、主テキストは bodyLarge、サブテキストは bodyMedium の onSurfaceVariant。背景は指定のロール（指定がなければ surfaceContainerLow）。上下に連結したリストは 3dp の隙間で並べ、外側の角を 28dp、隣り合う内側の角を 8dp にする（M3 Expressive のリスト表現）。
+- テキスト入力: 高さ 56dp。アウトラインは角丸 16dp・枠 outline、塗りつぶしは surfaceContainerHighest に下線。フォーカス時はラベルが上に浮き、枠が primary の 2dp になる。補助テキストは bodySmall で下に出す。
+- カルーセル: M3 の Carousel（Compose は HorizontalMultiBrowseCarousel / HorizontalUncontainedCarousel、Web は横スクロールのカード列）。カードは角丸 16dp のコンテナで、マルチブラウズとヒーローでは先頭のカードが大きく後ろほど小さく、均等では全カードが同じ幅、全画面では 1 枚が行を占める。画面の左右端まで使い、先頭の余白は 16dp、カード間は 8dp。カードの見出しはカードの下端に載せる。
+
+## 全体の指針
+- まず画面の目的から「これは何のアプリか」を判断し、そのカテゴリのアプリとして一般に期待される機能（作成・一覧・詳細・編集・削除・検索・設定など、該当するもの）を、スケッチに描かれていなくても一通り実装する。
+- データは本物として扱う。ユーザーが作成したデータは端末に（Room や DataStore など）永続化し、再起動後も残す。ダミーやサンプルのデータは入れず、何もない状態には空の案内を表示する。入力は検証し、失敗や削除は適切に確認・通知する。
+- スケッチに書かれていない振る舞いは、画面の目的と部品のラベルから補う。動作の指定がないボタンや項目は、そのラベルにふさわしい処理（保存、送信、詳細画面を開く、など）を実装し、何も起きないままにしない。
+- 配置は意図（順序・まとまり・上下左右の位置関係）を守れば十分で、寸法や余白は内容に合わせて調整してよい。実機で崩れるなら、スケッチより動くことを優先する。
+- コンポーネントは Jetpack Compose の material3（Expressive API を含む最新版） の標準部品を使い、ライブラリにある部品を独自描画しない。
+- 色は必ず上のカラースキームのロール名（primary、surfaceContainer など）で参照し、ハードコードした色を使わない。
+- 余白は画面端 16dp、部品同士は 8〜16dp を基本にし、タイポグラフィは M3 の型（titleLarge、bodyMedium など）を使う。
+- 「横一列に並べる」と書いた部品は必ず 1 つの Row（横並びコンテナ）に入れて同じ行に置き、縦に積んだり次の行に折り返したりしない。行の高さは一番高い部品に合わせ、他は縦中央に揃える。
+- 「〜の中に重ねて配置」と書いた部品は、その容器（ボックスやカード）を背景にした Box の上に重ねて描く。重なりは意図したものなので、レイアウトの都合で分離したり順序を変えたりしない。前後関係は記述の順（後に書いたものが前面）に従う。
+- タップできる部品にはリップルと軽い縮小のフィードバックを付ける。「戻る」は入ったときの遷移を逆再生し、システムの戻る操作（戻るジェスチャー・戻るボタン）でも同じ動きにする。
+- アイコンは Material Symbols Rounded を使う。
+- エミュレータや実機での動作検証は不要。実装が終わったら署名済みの release APK を成果物として提供する。
+- 主要なロジックにユニットテストを書き、すべて通る状態で提出する。
+- ライトとダークの両方のカラースキームに対応し、システム設定に追従する。"
+`;
+
+exports[`golden prompt > writes the whole document in ja for web 1`] = `
+"Brew Logを Material 3 Expressive のデザインで実装してください。A small app for logging the coffee you brew。
+スマホの縦画面（412×892）とデスクトップのブラウザ画面（1280×800）の両方を想定し、同じ名前の画面は 1 つの画面の 2 つの幅として、レスポンシブに実装します。ライトモードとダークモードの両方に対応し、端末のシステム設定に従って切り替えます。
+実装先は Web（ブラウザで動くアプリ）です。
+下の画面構成は、意図を伝えるためのラフスケッチです。完成図の仕様ではないので、静止画のように再現するのではなく、この種のアプリとして普通に期待される機能を一通り備えた、実際に使える完成品として仕上げてください。
+
+## カラー
+テーマは Purple 系です。Material 3 のライトとダークのカラースキームに次の色を設定し、UI の色はすべてこのロール経由で参照してください。
+ライトスキーム:
+- primary #6750A4 / onPrimary #FFFFFF / primaryContainer #EADDFF / onPrimaryContainer #21005D
+- secondary #635A75 / secondaryContainer #E8DEF8 / onSecondaryContainer #1D192B / tertiaryContainer #FFD8E4 / onTertiaryContainer #31111D
+- surface #FEF7FF / surfaceContainerLow #F7F2FA / surfaceContainer #F3EDF7 / surfaceContainerHigh #ECE6F0 / surfaceContainerHighest #E6E0E9
+- onSurface #1D1B20 / onSurfaceVariant #49454F / outline #79747E / outlineVariant #CAC4D0
+- inverseSurface #322F35 / inverseOnSurface #F5EFF7 / inversePrimary #D0BCFF
+- error #B3261E / onError #FFFFFF / errorContainer #F9DEDC / onErrorContainer #410E0B
+ダークスキーム:
+- primary #D2BCFC / onPrimary #32226F / primaryContainer #4C3889 / onPrimaryContainer #E9DDFF
+- secondary #CDC1E1 / secondaryContainer #4B425D / onSecondaryContainer #E9DDFD / tertiaryContainer #6C3644 / onTertiaryContainer #FDDAE1
+- surface #141317 / surfaceContainerLow #1C1B1F / surfaceContainer #201F23 / surfaceContainerHigh #2B292D / surfaceContainerHighest #363438
+- onSurface #E4E1E7 / onSurfaceVariant #C9C4D1 / outline #938F9B / outlineVariant #494550
+- inverseSurface #E4E1E7 / inverseOnSurface #313034 / inversePrimary #6750A4
+- error #F2B8B5 / onError #601410 / errorContainer #8C1D18 / onErrorContainer #F9DEDC
+
+## 形・文字・動き
+- 角丸は M3 Expressive の標準値のまま（ボタンはピル型、カードは 20dp、ダイアログは 28dp）。
+- 書体は Roboto を使う。タイポグラフィは M3 の標準ウェイト。
+- モーションは MotionScheme.standard()。画面遷移や状態変化は弾まない滑らかな動きにする。
+
+## 画面構成
+画面は 2 つあり、「Home」、「Home wide」です。
+
+The screen the app opens on。
+「Home」画面（スマホ 412×892）は上から順に次の通りです。重なっている部品はその旨を書いています。
+- 上部にタイトル「Home」のトップアプリバー。左に menu、右に search のアイコンボタンを置きます。
+- 中央付近に左寄せで「Open」(塗りつぶし)「Star」(トーナル)の2つのボタンが横に連結したボタングループを置きます。
+- 中央付近に塗りつぶしカード。上部に https://example.com/photo.png の画像（高さ 120dp）、見出し「Espresso」、本文「A short description of the picture」を置きます。
+- 下部に4項目のナビゲーションバー（「ホーム」(home)、「検索」(search)、「保存」(favorite)、「設定」(settings)。「検索」が選択状態）を置きます。
+
+「Home wide」画面（デスクトップ 1280×800）は上から順に次の通りです。重なっている部品はその旨を書いています。
+- 左端に4項目のナビゲーションレール（「ホーム」(home)、「検索」(search)、「保存」(favorite)、「設定」(settings)。最初の項目が選択状態）。WideNavigationRail、折りたたみ状態、幅 96dp。非モーダル型：現在の幅だけレイアウトを占有。上部のメニューボタンで展開・折りたたみを切り替える。
+- 中央付近に左寄せで2項目のリスト。上から 「Dark roast」（サブテキスト「Yesterday」）、先頭に local_cafe アイコン、末尾に star、「Light roast」（サブテキスト「2 days ago」）、先頭に local_cafe アイコン、末尾に starを置きます。
+- 中央付近に左寄せでラベル「Search」のアウトラインテキスト入力（先頭に search アイコン）を置きます。
+- 中央付近に左寄せでマルチブラウズレイアウトのカルーセル（カード 4 枚、高さ 180dp、各カードは角丸 16dp、横スクロール）を置きます。
+
+## 振る舞いと画面遷移
+- 「Open」ボタンは、タップすると「Home wide」画面へ右からのスライドで遷移する。
+- 「Star」ボタンは、タップするたびにオン／オフが切り替わるトグルボタンにする（オンのときはラベルが「Starred」に変わる、アイコンが star に変わる、スタイルが塗りつぶしに変わる）。
+- 「Home」画面は、左へスワイプすると指の動きに追従して「Home wide」画面へ右からのスライドで遷移する。
+
+## 各部品のスタイル
+使っている部品ごとの目安です。数値は M3 Expressive の標準値なので、標準コンポーネントで実現できるものは標準に任せ、内容に合わせて調整して構いません。
+- トップアプリバー: 高さ 64dp、背景は surface。タイトルは titleLarge、左右のアイコンボタンは 48dp。スクロール時に surfaceContainer へ色が変わる標準の挙動でよい。
+- ボタン: 高さ 56dp のミディアムサイズで、角は完全な丸（ピル型）。塗りつぶしは primary、トーナルは secondaryContainer、アウトラインは outline の 1dp 枠。横に連結したボタングループは 3dp の隙間で並べ、隣り合う内側の角だけ 8dp に小さくし、外側の角は丸のままにする（M3 Expressive の Connected button group）。高さを指定されたボタンは M3 のサイズ（XS 32dp / S 40dp / M 56dp / L 96dp / XL 136dp）に従い、左右の余白・文字・アイコンをそのサイズのものにし、角丸は高さの半分にする。
+- カード: 角丸 20dp。画像領域は各カードの記述に従い、上部・下部・先頭側・末尾側・背景全面のいずれかに置く（背景の場合はテキストの側からスクリムをかける。明るい文字なら黒、暗い文字なら白のフェード）。画像はアスペクト比を保って中央でクロップし、領域いっぱいに表示する。塗りつぶしは surfaceContainerHighest、エレベーテッドは surfaceContainerLow に Level 1 の影、アウトラインは outlineVariant の 1dp 枠。見出しは titleMedium、本文は bodyMedium。内側余白は 20dp、見出しと本文の間は 4dp、画像とテキストの間は 12dp。
+- ナビゲーションバー: 高さ 80dp、背景は surfaceContainer。選択中の項目は secondaryContainer のピル型インジケータ（幅 64dp・高さ 32dp）で示し、アイコンは塗りつぶし、ラベルは labelMedium。
+- M3 Expressive ナビゲーションレール: 折りたたみ時は幅 96dp、アイコンの下にラベル。展開時は幅 220dp、高さ 56dp の項目内でアイコンとラベルを横並びにし、間隔は 8dp。既存のトップアプリバーに合わせ、両モードの開閉状態すべてで背景は surfaceContainer。選択項目は secondaryContainer のピル型インジケータ、アイコンは onSecondaryContainer、ラベルは secondary を優先し、実際の背景（折りたたみ時は surfaceContainer、展開時は secondaryContainer）とのコントラストが 4.5:1 未満なら、それぞれ onSurface / onSecondaryContainer を使う。上部のメニューボタンで開閉する。非モーダル型は本文の横に配置し、モーダル型は展開時にスクリムとともに本文に重ね、背景操作を遮断する。スクリムのタップまたは Escape で閉じる。
+- リスト項目: 高さ 72dp、先頭アイコンは 24dp（指定がなければ primaryContainer の 40dp の円の上）、主テキストは bodyLarge、サブテキストは bodyMedium の onSurfaceVariant。背景は指定のロール（指定がなければ surfaceContainerLow）。上下に連結したリストは 3dp の隙間で並べ、外側の角を 28dp、隣り合う内側の角を 8dp にする（M3 Expressive のリスト表現）。
+- テキスト入力: 高さ 56dp。アウトラインは角丸 16dp・枠 outline、塗りつぶしは surfaceContainerHighest に下線。フォーカス時はラベルが上に浮き、枠が primary の 2dp になる。補助テキストは bodySmall で下に出す。
+- カルーセル: M3 の Carousel（Compose は HorizontalMultiBrowseCarousel / HorizontalUncontainedCarousel、Web は横スクロールのカード列）。カードは角丸 16dp のコンテナで、マルチブラウズとヒーローでは先頭のカードが大きく後ろほど小さく、均等では全カードが同じ幅、全画面では 1 枚が行を占める。画面の左右端まで使い、先頭の余白は 16dp、カード間は 8dp。カードの見出しはカードの下端に載せる。
+
+## 全体の指針
+- まず画面の目的から「これは何のアプリか」を判断し、そのカテゴリのアプリとして一般に期待される機能（作成・一覧・詳細・編集・削除・検索・設定など、該当するもの）を、スケッチに描かれていなくても一通り実装する。
+- データは本物として扱う。ユーザーが作成したデータはブラウザに（IndexedDB など）永続化し、再読み込み後も残す。ダミーやサンプルのデータは入れず、何もない状態には空の案内を表示する。入力は検証し、失敗や削除は適切に確認・通知する。
+- スケッチに書かれていない振る舞いは、画面の目的と部品のラベルから補う。動作の指定がないボタンや項目は、そのラベルにふさわしい処理（保存、送信、詳細画面を開く、など）を実装し、何も起きないままにしない。
+- 配置は意図（順序・まとまり・上下左右の位置関係）を守れば十分で、寸法や余白は内容に合わせて調整してよい。実機で崩れるなら、スケッチより動くことを優先する。
+- コンポーネントは Material Web の標準部品を使い、ライブラリにある部品を独自描画しない。
+- 色は必ず上のカラースキームのロール名（primary、surfaceContainer など）で参照し、ハードコードした色を使わない。
+- 余白は画面端 16dp、部品同士は 8〜16dp を基本にし、タイポグラフィは M3 の型（titleLarge、bodyMedium など）を使う。
+- 「横一列に並べる」と書いた部品は必ず 1 つの Row（横並びコンテナ）に入れて同じ行に置き、縦に積んだり次の行に折り返したりしない。行の高さは一番高い部品に合わせ、他は縦中央に揃える。
+- 「〜の中に重ねて配置」と書いた部品は、その容器（ボックスやカード）を背景にした Box の上に重ねて描く。重なりは意図したものなので、レイアウトの都合で分離したり順序を変えたりしない。前後関係は記述の順（後に書いたものが前面）に従う。
+- タップできる部品にはリップルと軽い縮小のフィードバックを付ける。「戻る」は入ったときの遷移を逆再生し、システムの戻る操作（戻るジェスチャー・戻るボタン）でも同じ動きにする。
+- アイコンは Material Symbols Rounded を使う。
+- ブラウザでの動作検証は不要。実装が終わったらproduction build を実行し、その出力を成果物として提供する。
+- 主要なロジックにユニットテストを書き、すべて通る状態で提出する。
+- ライトとダークの両方のカラースキームに対応し、システム設定に追従する。"
+`;
+
+exports[`golden prompt > writes the whole document in ko for android 1`] = `
+"Material 3 Expressive 디자인으로 구현해 주세요: Brew Log. A small app for logging the coffee you brew.
+세로형 휴대전화(412×892)와 가로형 태블릿(1280×800)을 모두 지원하며, 이름이 같은 화면은 서로 다른 너비의 동일한 화면이므로 반응형으로 구현하고, 라이트 모드와 다크 모드를 모두 지원하고 기기의 시스템 설정을 따른다.
+Android 네이티브 앱으로 구현한다.
+아래 화면 구성은 의도를 전달하는 대략적인 스케치이며 완성 사양이 아니다. 정적인 그림처럼 복제하지 말고 이 종류의 제품에 일반적으로 필요한 기능을 갖춘 실제 사용 가능한 앱으로 완성한다.
+
+## 색상
+테마는 Purple 계열이다. Material 3 라이트 및 다크 색상 구성에 다음 색상을 설정하고 모든 UI 색상을 해당 역할로 참조한다.
+라이트 색상 구성:
+- primary #6750A4 / onPrimary #FFFFFF / primaryContainer #EADDFF / onPrimaryContainer #21005D
+- secondary #635A75 / secondaryContainer #E8DEF8 / onSecondaryContainer #1D192B / tertiaryContainer #FFD8E4 / onTertiaryContainer #31111D
+- surface #FEF7FF / surfaceContainerLow #F7F2FA / surfaceContainer #F3EDF7 / surfaceContainerHigh #ECE6F0 / surfaceContainerHighest #E6E0E9
+- onSurface #1D1B20 / onSurfaceVariant #49454F / outline #79747E / outlineVariant #CAC4D0
+- inverseSurface #322F35 / inverseOnSurface #F5EFF7 / inversePrimary #D0BCFF
+- error #B3261E / onError #FFFFFF / errorContainer #F9DEDC / onErrorContainer #410E0B
+다크 색상 구성:
+- primary #D2BCFC / onPrimary #32226F / primaryContainer #4C3889 / onPrimaryContainer #E9DDFF
+- secondary #CDC1E1 / secondaryContainer #4B425D / onSecondaryContainer #E9DDFD / tertiaryContainer #6C3644 / onTertiaryContainer #FDDAE1
+- surface #141317 / surfaceContainerLow #1C1B1F / surfaceContainer #201F23 / surfaceContainerHigh #2B292D / surfaceContainerHighest #363438
+- onSurface #E4E1E7 / onSurfaceVariant #C9C4D1 / outline #938F9B / outlineVariant #494550
+- inverseSurface #E4E1E7 / inverseOnSurface #313034 / inversePrimary #6750A4
+- error #F2B8B5 / onError #601410 / errorContainer #8C1D18 / onErrorContainer #F9DEDC
+
+## 모양, 글꼴 및 모션
+- M3 Expressive 기본 모서리를 사용한다(버튼은 알약 모양, 카드 20dp, 대화상자 28dp).
+- 사용할 글꼴: Roboto. M3 표준 글자 굵기를 사용한다.
+- 모션은 MotionScheme.standard()를 사용한다. 화면 전환과 상태 변화는 튀지 않고 부드럽게 처리한다.
+
+## 화면 구성
+화면은 2개이며 "Home", "Home wide"입니다.
+
+The screen the app opens on.
+"Home" 화면(휴대전화 412×892). 위에서부터 다음과 같습니다. 겹친 부품은 별도로 표시합니다.
+- 위쪽 다음 항목을 배치합니다: 제목이 "Home"인 상단 앱 바, 왼쪽 menu, 오른쪽 search 아이콘 버튼.
+- 가운데 왼쪽 정렬로 다음 항목을 배치합니다: "Open"(채움), "Star"(토널) 버튼 2개를 가로로 연결한 버튼 그룹.
+- 가운데 다음 항목을 배치합니다: 채움 카드. 위쪽에 https://example.com/photo.png의 이미지(높이 120dp), 제목 "Espresso", 본문 "A short description of the picture".
+- 아래쪽 다음 항목을 배치합니다: 4개 항목의 내비게이션 바("홈"(home), "검색"(search), "저장됨"(favorite), "설정"(settings), "검색" 선택됨).
+
+"Home wide" 화면(데스크톱 1280×800). 위에서부터 다음과 같습니다. 겹친 부품은 별도로 표시합니다.
+- 왼쪽 가장자리에 4개 항목의 내비게이션 레일("홈"(home), "검색"(search), "저장됨"(favorite), "설정"(settings), 첫 항목 선택됨). WideNavigationRail, 접힌 상태, 너비 96dp. 비모달 레이아웃: 현재 너비만큼 레이아웃 공간을 차지. 상단 메뉴 버튼으로 펼치기와 접기를 전환한다.
+- 가운데 왼쪽 정렬로 다음 항목을 배치합니다: 2개 항목의 목록. 위에서부터 "Dark roast"(보조 텍스트 "Yesterday"), 앞쪽 local_cafe 아이콘, 뒤쪽 star, "Light roast"(보조 텍스트 "2 days ago"), 앞쪽 local_cafe 아이콘, 뒤쪽 star.
+- 가운데 왼쪽 정렬로 다음 항목을 배치합니다: 레이블이 "Search"인 윤곽선 텍스트 입력란(앞쪽 search 아이콘).
+- 가운데 왼쪽 정렬로 다음 항목을 배치합니다: 멀티 브라우즈 레이아웃 캐러셀(카드 4장, 높이 180dp, 카드마다 모서리 16dp, 가로 스크롤).
+
+## 동작 및 화면 전환
+- "Open" 버튼: 탭하면 "Home wide" 화면으로 오른쪽에서 슬라이드 전환하여 이동한다.
+- "Star" 버튼: 탭할 때마다 켜짐/꺼짐이 전환되는 토글 버튼으로 만든다(켜졌을 때 변경할 레이블: "Starred", 변경할 아이콘: star, 변경할 스타일: 채움).
+- "Home" 화면은 왼쪽으로 스와이프하면 손가락을 따라 움직이며 "Home wide" 화면으로 오른쪽에서 슬라이드 전환하여 이동한다.
+
+## 부품별 스타일
+사용된 부품별 지침입니다. 수치는 M3 Expressive 기본값이며 표준 컴포넌트가 제공하는 동작은 그대로 사용하고 내용에 맞게 조정할 수 있습니다.
+- 상단 앱 바: 높이 64dp, 배경 surface. 상태 표시줄 뒤까지 배경을 늘리고 시스템 인셋만큼 위쪽 여백을 둔다. 제목은 titleLarge, 양쪽 아이콘 버튼은 48dp를 사용한다. 중간/대형으로 지정된 바는 M3 flexible top app bar로 높이 112dp/152dp, 아이콘은 위 64dp 줄에, 제목은 아래 별도 줄(headlineSmall/headlineMedium)에 두고 스크롤하면 작은 바로 줄어든다.
+- 버튼: 높이 56dp의 중간 크기, 완전 둥근 알약 모양. 채움은 primary, 토널은 secondaryContainer, 윤곽선은 1dp outline 테두리를 사용한다. 연결 버튼 그룹은 간격 3dp, 맞닿는 안쪽 모서리 8dp, 바깥쪽 모서리는 둥글게 유지한다. 높이가 지정된 버튼은 M3 크기(XS 32dp / S 40dp / M 56dp / L 96dp / XL 136dp)를 따라 좌우 여백, 글자 크기, 아이콘 크기를 그 크기의 값으로 하고 모서리는 높이의 절반으로 한다.
+- 카드: 모서리 20dp. 이미지 영역은 각 카드의 설명에 따라 위쪽·아래쪽·앞쪽·뒤쪽·배경 전체 중 한 곳에 배치한다(배경일 때는 텍스트 쪽에서 스크림을 넣는다. 밝은 텍스트에는 검정, 어두운 텍스트에는 흰색 페이드). 이미지는 비율을 유지한 채 가운데를 기준으로 잘라 영역을 채운다. 채움은 surfaceContainerHighest, 돌출은 surfaceContainerLow와 Level 1 그림자, 윤곽선은 1dp outlineVariant 테두리를 사용한다. 제목 titleMedium, 본문 bodyMedium. 안쪽 여백 20dp, 제목과 본문 사이 4dp, 이미지와 텍스트 사이 12dp.
+- 내비게이션 바: 높이 80dp, 배경 surfaceContainer. 제스처 내비게이션 영역까지 배경을 늘리고 시스템 인셋만큼 아래쪽 여백을 둔다. 선택 항목은 64×32dp secondaryContainer 알약 표시기, 채운 아이콘, labelMedium 레이블로 표시한다.
+- M3 Expressive 내비게이션 레일: 접으면 너비 96dp, 아이콘 아래에 레이블을 배치한다. 펼치면 너비 220dp, 항목 높이 56dp, 아이콘과 레이블을 8dp 간격으로 가로 배치한다. 기존 상단 앱 바와 맞추어 두 모드의 접힌 상태와 펼친 상태 모두 surfaceContainer 배경을 사용한다. 선택 항목은 secondaryContainer 알약 표시기, onSecondaryContainer 아이콘, 레이블은 secondary를 우선 사용한다. 실제 배경(접힘: surfaceContainer, 펼침: secondaryContainer)과의 대비가 4.5:1 미만이면 각각 onSurface / onSecondaryContainer를 사용한다. 상단 메뉴 버튼으로 펼치기와 접기를 전환한다. 비모달은 콘텐츠 옆에 배치하고 모달은 펼칠 때 스크림과 함께 콘텐츠를 덮어 배경 조작을 차단한다. 스크림을 탭하거나 Escape를 누르면 닫힌다.
+- 목록 항목: 높이 72dp, 앞쪽 아이콘 24dp(별도 지정이 없으면 40dp primaryContainer 원 위), 주 텍스트 bodyLarge, 보조 텍스트 bodyMedium/onSurfaceVariant. 연결 목록은 간격 3dp, 바깥 모서리 28dp, 안쪽 모서리 8dp.
+- 텍스트 입력란: 높이 56dp. 윤곽선형은 모서리 16dp와 outline 테두리, 채움형은 surfaceContainerHighest 배경과 밑줄을 사용한다. 포커스 시 레이블을 올리고 테두리를 2dp primary로 바꾼다.
+- 캐러셀: M3 Carousel(Compose는 HorizontalMultiBrowseCarousel / HorizontalUncontainedCarousel, 웹은 가로로 스크롤하는 카드 행). 카드는 모서리 16dp 컨테이너이며, 멀티 브라우즈와 히어로는 첫 카드가 크고 뒤로 갈수록 작아지고, 언컨테인드는 모든 카드가 같은 너비, 전체 화면은 카드 한 장이 행을 차지한다. 화면 좌우 끝까지 쓰고 시작 여백 16dp, 카드 간격 8dp. 카드 제목은 카드 아래쪽에 놓는다.
+
+## 전체 지침
+- 화면의 목적에서 앱의 종류를 판단하고, 스케치에 없더라도 그 종류의 앱에 일반적으로 필요한 기능(만들기, 목록, 상세, 편집, 삭제, 검색, 설정 등)을 구현한다.
+- 데이터를 실제 데이터로 취급한다. 사용자가 만든 데이터는 기기(Room, DataStore 등)에 저장해 재시작 후에도 유지한다. 더미나 샘플 데이터는 넣지 않고 데이터가 없으면 빈 상태를 표시한다. 입력을 검증하고 실패와 삭제는 적절히 확인하거나 알린다.
+- 스케치에 없는 동작은 화면 목적과 부품 레이블을 바탕으로 보완한다. 동작이 지정되지 않은 버튼이나 항목도 레이블에 맞는 동작(저장, 보내기, 상세 화면 열기 등)을 수행해야 한다.
+- 레이아웃은 의도한 순서, 그룹, 상대 위치를 유지하되 크기와 간격은 내용에 맞게 조정할 수 있다. 실제 기기에서 깨진다면 스케치 일치보다 정상 동작을 우선한다.
+- 최신 Expressive API를 포함한 Jetpack Compose material3의 표준 컴포넌트를 사용하고 라이브러리에 있는 부품을 직접 그리지 않는다.
+- 색상은 하드코딩하지 말고 위 색상 구성의 역할 이름(primary, surfaceContainer 등)으로 참조한다.
+- 화면 가장자리는 16dp, 부품 사이는 8~16dp를 기본으로 하고 M3 글꼴 스타일(titleLarge, bodyMedium 등)을 사용한다.
+- '한 행에 배치'한 부품은 하나의 Row(가로 컨테이너)에서 같은 줄에 두고 세로로 쌓거나 줄 바꿈하지 않는다. 행 높이는 가장 높은 부품에 맞추고 나머지는 세로 중앙 정렬한다.
+- '내부에 겹쳐 배치'한 부품은 해당 컨테이너(상자 또는 카드)를 배경으로 하는 Box 위에 그린다. 이 겹침은 의도된 것이므로 분리하거나 순서를 바꾸지 않으며 나중에 설명된 항목을 앞에 그린다.
+- 탭 가능한 부품에는 리플과 약한 축소 피드백을 준다. '뒤로'는 진입 전환을 반대로 재생하고 시스템 뒤로 제스처나 버튼도 같은 동작을 수행한다.
+- 아이콘은 Material Symbols Rounded를 사용한다.
+- 에뮬레이터나 실제 기기 동작 검증은 필요 없다. 구현 후 서명된 release APK을 결과물로 제공한다.
+- 주요 로직에 단위 테스트를 작성하고 모두 통과하는 상태로 제출한다.
+- 라이트와 다크 색상 스킴을 모두 지원하고 시스템 설정을 따른다."
+`;
+
+exports[`golden prompt > writes the whole document in ko for web 1`] = `
+"Material 3 Expressive 디자인으로 구현해 주세요: Brew Log. A small app for logging the coffee you brew.
+세로형 휴대전화(412×892)와 데스크톱 브라우저(1280×800)을 모두 지원하며, 이름이 같은 화면은 서로 다른 너비의 동일한 화면이므로 반응형으로 구현하고, 라이트 모드와 다크 모드를 모두 지원하고 기기의 시스템 설정을 따른다.
+브라우저에서 실행되는 웹 앱으로 구현한다.
+아래 화면 구성은 의도를 전달하는 대략적인 스케치이며 완성 사양이 아니다. 정적인 그림처럼 복제하지 말고 이 종류의 제품에 일반적으로 필요한 기능을 갖춘 실제 사용 가능한 앱으로 완성한다.
+
+## 색상
+테마는 Purple 계열이다. Material 3 라이트 및 다크 색상 구성에 다음 색상을 설정하고 모든 UI 색상을 해당 역할로 참조한다.
+라이트 색상 구성:
+- primary #6750A4 / onPrimary #FFFFFF / primaryContainer #EADDFF / onPrimaryContainer #21005D
+- secondary #635A75 / secondaryContainer #E8DEF8 / onSecondaryContainer #1D192B / tertiaryContainer #FFD8E4 / onTertiaryContainer #31111D
+- surface #FEF7FF / surfaceContainerLow #F7F2FA / surfaceContainer #F3EDF7 / surfaceContainerHigh #ECE6F0 / surfaceContainerHighest #E6E0E9
+- onSurface #1D1B20 / onSurfaceVariant #49454F / outline #79747E / outlineVariant #CAC4D0
+- inverseSurface #322F35 / inverseOnSurface #F5EFF7 / inversePrimary #D0BCFF
+- error #B3261E / onError #FFFFFF / errorContainer #F9DEDC / onErrorContainer #410E0B
+다크 색상 구성:
+- primary #D2BCFC / onPrimary #32226F / primaryContainer #4C3889 / onPrimaryContainer #E9DDFF
+- secondary #CDC1E1 / secondaryContainer #4B425D / onSecondaryContainer #E9DDFD / tertiaryContainer #6C3644 / onTertiaryContainer #FDDAE1
+- surface #141317 / surfaceContainerLow #1C1B1F / surfaceContainer #201F23 / surfaceContainerHigh #2B292D / surfaceContainerHighest #363438
+- onSurface #E4E1E7 / onSurfaceVariant #C9C4D1 / outline #938F9B / outlineVariant #494550
+- inverseSurface #E4E1E7 / inverseOnSurface #313034 / inversePrimary #6750A4
+- error #F2B8B5 / onError #601410 / errorContainer #8C1D18 / onErrorContainer #F9DEDC
+
+## 모양, 글꼴 및 모션
+- M3 Expressive 기본 모서리를 사용한다(버튼은 알약 모양, 카드 20dp, 대화상자 28dp).
+- 사용할 글꼴: Roboto. M3 표준 글자 굵기를 사용한다.
+- 모션은 MotionScheme.standard()를 사용한다. 화면 전환과 상태 변화는 튀지 않고 부드럽게 처리한다.
+
+## 화면 구성
+화면은 2개이며 "Home", "Home wide"입니다.
+
+The screen the app opens on.
+"Home" 화면(휴대전화 412×892). 위에서부터 다음과 같습니다. 겹친 부품은 별도로 표시합니다.
+- 위쪽 다음 항목을 배치합니다: 제목이 "Home"인 상단 앱 바, 왼쪽 menu, 오른쪽 search 아이콘 버튼.
+- 가운데 왼쪽 정렬로 다음 항목을 배치합니다: "Open"(채움), "Star"(토널) 버튼 2개를 가로로 연결한 버튼 그룹.
+- 가운데 다음 항목을 배치합니다: 채움 카드. 위쪽에 https://example.com/photo.png의 이미지(높이 120dp), 제목 "Espresso", 본문 "A short description of the picture".
+- 아래쪽 다음 항목을 배치합니다: 4개 항목의 내비게이션 바("홈"(home), "검색"(search), "저장됨"(favorite), "설정"(settings), "검색" 선택됨).
+
+"Home wide" 화면(데스크톱 1280×800). 위에서부터 다음과 같습니다. 겹친 부품은 별도로 표시합니다.
+- 왼쪽 가장자리에 4개 항목의 내비게이션 레일("홈"(home), "검색"(search), "저장됨"(favorite), "설정"(settings), 첫 항목 선택됨). WideNavigationRail, 접힌 상태, 너비 96dp. 비모달 레이아웃: 현재 너비만큼 레이아웃 공간을 차지. 상단 메뉴 버튼으로 펼치기와 접기를 전환한다.
+- 가운데 왼쪽 정렬로 다음 항목을 배치합니다: 2개 항목의 목록. 위에서부터 "Dark roast"(보조 텍스트 "Yesterday"), 앞쪽 local_cafe 아이콘, 뒤쪽 star, "Light roast"(보조 텍스트 "2 days ago"), 앞쪽 local_cafe 아이콘, 뒤쪽 star.
+- 가운데 왼쪽 정렬로 다음 항목을 배치합니다: 레이블이 "Search"인 윤곽선 텍스트 입력란(앞쪽 search 아이콘).
+- 가운데 왼쪽 정렬로 다음 항목을 배치합니다: 멀티 브라우즈 레이아웃 캐러셀(카드 4장, 높이 180dp, 카드마다 모서리 16dp, 가로 스크롤).
+
+## 동작 및 화면 전환
+- "Open" 버튼: 탭하면 "Home wide" 화면으로 오른쪽에서 슬라이드 전환하여 이동한다.
+- "Star" 버튼: 탭할 때마다 켜짐/꺼짐이 전환되는 토글 버튼으로 만든다(켜졌을 때 변경할 레이블: "Starred", 변경할 아이콘: star, 변경할 스타일: 채움).
+- "Home" 화면은 왼쪽으로 스와이프하면 손가락을 따라 움직이며 "Home wide" 화면으로 오른쪽에서 슬라이드 전환하여 이동한다.
+
+## 부품별 스타일
+사용된 부품별 지침입니다. 수치는 M3 Expressive 기본값이며 표준 컴포넌트가 제공하는 동작은 그대로 사용하고 내용에 맞게 조정할 수 있습니다.
+- 상단 앱 바: 높이 64dp, 배경 surface. 제목은 titleLarge, 양쪽 아이콘 버튼은 48dp를 사용한다. 스크롤 시 surfaceContainer로 색상이 바뀌는 표준 동작을 사용한다.
+- 버튼: 높이 56dp의 중간 크기, 완전 둥근 알약 모양. 채움은 primary, 토널은 secondaryContainer, 윤곽선은 1dp outline 테두리를 사용한다. 연결 버튼 그룹은 간격 3dp, 맞닿는 안쪽 모서리 8dp, 바깥쪽 모서리는 둥글게 유지한다. 높이가 지정된 버튼은 M3 크기(XS 32dp / S 40dp / M 56dp / L 96dp / XL 136dp)를 따라 좌우 여백, 글자 크기, 아이콘 크기를 그 크기의 값으로 하고 모서리는 높이의 절반으로 한다.
+- 카드: 모서리 20dp. 이미지 영역은 각 카드의 설명에 따라 위쪽·아래쪽·앞쪽·뒤쪽·배경 전체 중 한 곳에 배치한다(배경일 때는 텍스트 쪽에서 스크림을 넣는다. 밝은 텍스트에는 검정, 어두운 텍스트에는 흰색 페이드). 이미지는 비율을 유지한 채 가운데를 기준으로 잘라 영역을 채운다. 채움은 surfaceContainerHighest, 돌출은 surfaceContainerLow와 Level 1 그림자, 윤곽선은 1dp outlineVariant 테두리를 사용한다. 제목 titleMedium, 본문 bodyMedium. 안쪽 여백 20dp, 제목과 본문 사이 4dp, 이미지와 텍스트 사이 12dp.
+- 내비게이션 바: 높이 80dp, 배경 surfaceContainer. 선택 항목은 secondaryContainer 알약 표시기(64×32dp), 채운 아이콘과 labelMedium 레이블로 표시한다.
+- M3 Expressive 내비게이션 레일: 접으면 너비 96dp, 아이콘 아래에 레이블을 배치한다. 펼치면 너비 220dp, 항목 높이 56dp, 아이콘과 레이블을 8dp 간격으로 가로 배치한다. 기존 상단 앱 바와 맞추어 두 모드의 접힌 상태와 펼친 상태 모두 surfaceContainer 배경을 사용한다. 선택 항목은 secondaryContainer 알약 표시기, onSecondaryContainer 아이콘, 레이블은 secondary를 우선 사용한다. 실제 배경(접힘: surfaceContainer, 펼침: secondaryContainer)과의 대비가 4.5:1 미만이면 각각 onSurface / onSecondaryContainer를 사용한다. 상단 메뉴 버튼으로 펼치기와 접기를 전환한다. 비모달은 콘텐츠 옆에 배치하고 모달은 펼칠 때 스크림과 함께 콘텐츠를 덮어 배경 조작을 차단한다. 스크림을 탭하거나 Escape를 누르면 닫힌다.
+- 목록 항목: 높이 72dp, 앞쪽 아이콘 24dp(별도 지정이 없으면 40dp primaryContainer 원 위), 주 텍스트 bodyLarge, 보조 텍스트 bodyMedium/onSurfaceVariant. 연결 목록은 간격 3dp, 바깥 모서리 28dp, 안쪽 모서리 8dp.
+- 텍스트 입력란: 높이 56dp. 윤곽선형은 모서리 16dp와 outline 테두리, 채움형은 surfaceContainerHighest 배경과 밑줄을 사용한다. 포커스 시 레이블을 올리고 테두리를 2dp primary로 바꾼다.
+- 캐러셀: M3 Carousel(Compose는 HorizontalMultiBrowseCarousel / HorizontalUncontainedCarousel, 웹은 가로로 스크롤하는 카드 행). 카드는 모서리 16dp 컨테이너이며, 멀티 브라우즈와 히어로는 첫 카드가 크고 뒤로 갈수록 작아지고, 언컨테인드는 모든 카드가 같은 너비, 전체 화면은 카드 한 장이 행을 차지한다. 화면 좌우 끝까지 쓰고 시작 여백 16dp, 카드 간격 8dp. 카드 제목은 카드 아래쪽에 놓는다.
+
+## 전체 지침
+- 화면의 목적에서 앱의 종류를 판단하고, 스케치에 없더라도 그 종류의 앱에 일반적으로 필요한 기능(만들기, 목록, 상세, 편집, 삭제, 검색, 설정 등)을 구현한다.
+- 데이터를 실제 데이터로 취급한다. 사용자가 만든 데이터는 브라우저(IndexedDB 등)에 저장해 새로고침 후에도 유지한다. 더미나 샘플 데이터는 넣지 않고 데이터가 없으면 빈 상태를 표시한다. 입력을 검증하고 실패와 삭제는 적절히 확인하거나 알린다.
+- 스케치에 없는 동작은 화면 목적과 부품 레이블을 바탕으로 보완한다. 동작이 지정되지 않은 버튼이나 항목도 레이블에 맞는 동작(저장, 보내기, 상세 화면 열기 등)을 수행해야 한다.
+- 레이아웃은 의도한 순서, 그룹, 상대 위치를 유지하되 크기와 간격은 내용에 맞게 조정할 수 있다. 실제 기기에서 깨진다면 스케치 일치보다 정상 동작을 우선한다.
+- Material Web의 표준 컴포넌트를 사용하고 라이브러리에 있는 부품을 직접 그리지 않는다.
+- 색상은 하드코딩하지 말고 위 색상 구성의 역할 이름(primary, surfaceContainer 등)으로 참조한다.
+- 화면 가장자리는 16dp, 부품 사이는 8~16dp를 기본으로 하고 M3 글꼴 스타일(titleLarge, bodyMedium 등)을 사용한다.
+- '한 행에 배치'한 부품은 하나의 Row(가로 컨테이너)에서 같은 줄에 두고 세로로 쌓거나 줄 바꿈하지 않는다. 행 높이는 가장 높은 부품에 맞추고 나머지는 세로 중앙 정렬한다.
+- '내부에 겹쳐 배치'한 부품은 해당 컨테이너(상자 또는 카드)를 배경으로 하는 Box 위에 그린다. 이 겹침은 의도된 것이므로 분리하거나 순서를 바꾸지 않으며 나중에 설명된 항목을 앞에 그린다.
+- 탭 가능한 부품에는 리플과 약한 축소 피드백을 준다. '뒤로'는 진입 전환을 반대로 재생하고 시스템 뒤로 제스처나 버튼도 같은 동작을 수행한다.
+- 아이콘은 Material Symbols Rounded를 사용한다.
+- 브라우저 동작 검증은 필요 없다. 구현 후 production build를 실행하고 그 출력을 결과물로 제공한다.
+- 주요 로직에 단위 테스트를 작성하고 모두 통과하는 상태로 제출한다.
+- 라이트와 다크 색상 스킴을 모두 지원하고 시스템 설정을 따른다."
+`;
+
+exports[`golden prompt > writes the whole document in zh for android 1`] = `
+"请用 Material 3 Expressive 的设计实现Brew Log。A small app for logging the coffee you brew。
+同时面向竖屏手机（412×892）和横屏平板（1280×800）；同名的屏幕是同一个屏幕的两种宽度，请做成响应式，同时支持浅色和深色模式，并跟随设备的系统设置切换。
+实现目标是 Android（原生应用）。
+下面的屏幕结构是传达意图的草图，不是最终规格。不要把它当静态图片照搬，而要做成这类应用通常应具备的功能齐全、真正可用的成品。
+
+## 配色
+主题为 Purple 系。请在Material 3 的浅色和深色配色方案中设置以下颜色，UI 的所有颜色都通过这些角色引用。
+浅色配色：
+- primary #6750A4 / onPrimary #FFFFFF / primaryContainer #EADDFF / onPrimaryContainer #21005D
+- secondary #635A75 / secondaryContainer #E8DEF8 / onSecondaryContainer #1D192B / tertiaryContainer #FFD8E4 / onTertiaryContainer #31111D
+- surface #FEF7FF / surfaceContainerLow #F7F2FA / surfaceContainer #F3EDF7 / surfaceContainerHigh #ECE6F0 / surfaceContainerHighest #E6E0E9
+- onSurface #1D1B20 / onSurfaceVariant #49454F / outline #79747E / outlineVariant #CAC4D0
+- inverseSurface #322F35 / inverseOnSurface #F5EFF7 / inversePrimary #D0BCFF
+- error #B3261E / onError #FFFFFF / errorContainer #F9DEDC / onErrorContainer #410E0B
+深色配色：
+- primary #D2BCFC / onPrimary #32226F / primaryContainer #4C3889 / onPrimaryContainer #E9DDFF
+- secondary #CDC1E1 / secondaryContainer #4B425D / onSecondaryContainer #E9DDFD / tertiaryContainer #6C3644 / onTertiaryContainer #FDDAE1
+- surface #141317 / surfaceContainerLow #1C1B1F / surfaceContainer #201F23 / surfaceContainerHigh #2B292D / surfaceContainerHighest #363438
+- onSurface #E4E1E7 / onSurfaceVariant #C9C4D1 / outline #938F9B / outlineVariant #494550
+- inverseSurface #E4E1E7 / inverseOnSurface #313034 / inversePrimary #6750A4
+- error #F2B8B5 / onError #601410 / errorContainer #8C1D18 / onErrorContainer #F9DEDC
+
+## 形状、字体与动效
+- 圆角沿用 M3 Expressive 的默认值（按钮为胶囊形，卡片 20dp，对话框 28dp）。
+- 字体使用 Roboto。排版使用 M3 的标准字重。
+- 动效使用 MotionScheme.standard()：屏幕过渡和状态变化平滑、不回弹。
+
+## 屏幕结构
+共有 2 个屏幕：“Home”、“Home wide”。
+
+The screen the app opens on。
+“Home”屏幕（手机 412×892）从上到下依次如下（重叠的组件会特别说明）：
+- 上部放置标题为“Home”的顶部应用栏，左侧是 menu，右侧是 search 图标按钮。
+- 中部靠左放置由“Open”(填充)“Star”(色调)这 2 个按钮横向相连组成的按钮组。
+- 中部放置填充卡片。顶部是 https://example.com/photo.png 的图片（高 120dp），标题“Espresso”，正文“A short description of the picture”。
+- 下部放置4个项目的导航栏（“首页”(home)、“搜索”(search)、“收藏”(favorite)、“设置”(settings)，“搜索”为选中状态）。
+
+“Home wide”屏幕（桌面 1280×800）从上到下依次如下（重叠的组件会特别说明）：
+- 左缘：4个项目的侧边导航栏（“首页”(home)、“搜索”(search)、“收藏”(favorite)、“设置”(settings)，第一项为选中状态）。WideNavigationRail，折叠状态，宽 96dp。非模态布局：按当前宽度占据布局空间。顶部菜单按钮切换展开与折叠。
+- 中部靠左放置2项的列表，从上到下依次为 “Dark roast”（辅助文本“Yesterday”），左侧显示 local_cafe 图标，右侧显示 star 图标、“Light roast”（辅助文本“2 days ago”），左侧显示 local_cafe 图标，右侧显示 star 图标。
+- 中部靠左放置标签为“Search”的描边文本输入框（左侧显示 search 图标）。
+- 中部靠左放置多浏览布局的轮播（4 张卡片，高 180dp，每张卡片圆角 16dp，横向滚动）。
+
+## 行为与屏幕跳转
+- “Open”按钮：点击后以从右侧滑入的方式跳转到“Home wide”屏幕。
+- “Star”按钮：做成每次点击都切换开/关状态的切换按钮（开启时文字变为“Starred”、图标变为 star、样式变为填充）。
+- “Home”屏幕：向左滑动时跟随手指移动并以从右侧滑入的方式跳转到“Home wide”屏幕。
+
+## 各组件的样式
+以下是所用组件的参考。数值均为 M3 Expressive 的标准值，能用标准组件实现的就交给标准组件，并可根据内容适当调整。
+- 顶部应用栏：高 64dp，背景为 surface。背景延伸到状态栏后面，并按系统内边距在顶部留出空间。标题用 titleLarge，左右图标按钮 48dp。滚动时变为 surfaceContainer 的标准行为即可。指定为中号／大号的应用栏是 M3 的 flexible top app bar：高 112dp／152dp，图标位于顶部 64dp 一行，标题单独占底部一行（headlineSmall／headlineMedium），滚动时收缩为小号应用栏。
+- 按钮：中号，高 56dp，完全圆角（胶囊形）。填充用 primary，色调用 secondaryContainer，描边用 1dp 的 outline 边框。横向相连的按钮组以 3dp 间距排列，只把相邻的内侧圆角缩小到 8dp，外侧保持圆角（M3 Expressive 的 Connected button group）。指定了高度的按钮遵循 M3 尺寸（XS 32dp / S 40dp / M 56dp / L 96dp / XL 136dp）：左右内边距、文字和图标取该尺寸的值，圆角为高度的一半。
+- 卡片：圆角 20dp。图片区域按每张卡片的描述放在顶部、底部、左侧、右侧或作为整卡背景（背景时从文字一侧加渐变遮罩：浅色文字用黑色，深色文字用白色）。图片保持宽高比并居中裁剪以填满区域。填充用 surfaceContainerHighest，浮起用 surfaceContainerLow 加 Level 1 阴影，描边用 1dp 的 outlineVariant 边框。标题用 titleMedium，正文用 bodyMedium。内边距 20dp，标题与正文间距 4dp，图片与文字间距 12dp。
+- 导航栏：高 80dp，背景为 surfaceContainer。背景延伸到屏幕底部的手势导航区域，并按系统内边距在底部留出空间。选中项用 secondaryContainer 的胶囊指示器（宽 64dp、高 32dp）表示，图标为填充样式，标签用 labelMedium。
+- M3 Expressive 侧边导航栏：折叠宽 96dp，标签位于图标下方。展开宽 220dp，项目高 56dp，图标与标签横向排列，间距 8dp。沿用现有顶部应用栏配色，两种模式在折叠与展开时均使用 surfaceContainer 背景。选中项用 secondaryContainer 胶囊指示器，图标为 onSecondaryContainer，文字优先使用 secondary；若与实际背景（折叠为 surfaceContainer，展开为 secondaryContainer）的对比度低于 4.5:1，则分别使用 onSurface / onSecondaryContainer。顶部菜单按钮切换展开与折叠。非模态型位于内容旁；模态型展开时带遮罩覆盖内容并阻止背景交互，点击遮罩或按 Escape 关闭。
+- 列表项：高 72dp，左侧图标 24dp（未指定时放在 40dp 的 primaryContainer 圆形上），主文本用 bodyLarge，辅助文本用 bodyMedium 的 onSurfaceVariant，背景为指定的颜色角色（未指定则为 surfaceContainerLow）。上下相连的列表以 3dp 间距排列，外侧圆角 28dp，相邻内侧圆角 8dp（M3 Expressive 的列表样式）。
+- 文本输入框：高 56dp。描边样式圆角 16dp、边框为 outline；填充样式背景为 surfaceContainerHighest 并带下划线。聚焦时标签上浮，边框变为 2dp 的 primary。辅助文本用 bodySmall 显示在下方。
+- 轮播：M3 的 Carousel（Compose 为 HorizontalMultiBrowseCarousel / HorizontalUncontainedCarousel，Web 为横向滚动的卡片行）。卡片为圆角 16dp 的容器；多浏览与主图布局中首张卡片最大、越靠后越小，等宽滚动中每张卡片同宽，全屏布局中一张卡片占满整行。贴近屏幕左右边缘，起始留白 16dp，卡片间距 8dp。卡片标题放在卡片底部。
+
+## 整体原则
+- 先根据屏幕目的判断这是什么类型的应用，并实现该类应用通常应有的功能（新建、列表、详情、编辑、删除、搜索、设置等，视情况而定），即使草图中没有画出。
+- 把数据当作真实数据处理：用户创建的数据要持久化到设备（Room、DataStore 等），重启后仍保留。不要放入虚拟或示例数据，没有数据时显示空状态提示。校验输入，删除和失败要有适当的确认或提示。
+- 草图没有写明的行为，根据屏幕目的和组件标签补全。未指定行为的按钮或项目要实现与其标签相符的操作（保存、发送、打开详情页等），不要什么都不做。
+- 布局只需保持意图（顺序、分组、相对位置），尺寸和间距可根据内容调整。若在真机上会出问题，宁可能用也不要死守草图。
+- 组件使用 Jetpack Compose material3（包含 Expressive API 的最新版） 的标准组件，库里已有的组件不要自行绘制。
+- 颜色必须通过上面配色方案的角色名（primary、surfaceContainer 等）引用，不要写死颜色值。
+- 屏幕边缘留 16dp，组件之间 8〜16dp，排版使用 M3 的字体样式（titleLarge、bodyMedium 等）。
+- 写明“横向排成一行”的组件必须放进同一个 Row（横向容器）并在同一行显示，不要竖着堆叠或换行。行高以最高的组件为准，其余组件垂直居中。
+- 写明“内部叠放”的组件要绘制在该容器（容器框或卡片）之上（以容器为背景的 Box）。这种叠放是有意为之，不要因布局原因拆开或调整顺序。前后关系按描述顺序，后写的在前面。
+- 可点击的组件加涟漪和轻微缩放反馈。“返回”反向播放进入时的过渡动画，系统返回手势／返回键也要做同样的效果。
+- 图标使用 Material Symbols Rounded。
+- 不需要在模拟器或真机上验证。实现完成后生成已签名的 release APK 作为交付物。
+- 为主要逻辑编写单元测试，并在全部通过的状态下交付。
+- 同时支持浅色与深色配色方案，并跟随系统设置。"
+`;
+
+exports[`golden prompt > writes the whole document in zh for web 1`] = `
+"请用 Material 3 Expressive 的设计实现Brew Log。A small app for logging the coffee you brew。
+同时面向竖屏手机（412×892）和桌面浏览器视口（1280×800）；同名的屏幕是同一个屏幕的两种宽度，请做成响应式，同时支持浅色和深色模式，并跟随设备的系统设置切换。
+实现目标是 Web（在浏览器中运行的应用）。
+下面的屏幕结构是传达意图的草图，不是最终规格。不要把它当静态图片照搬，而要做成这类应用通常应具备的功能齐全、真正可用的成品。
+
+## 配色
+主题为 Purple 系。请在Material 3 的浅色和深色配色方案中设置以下颜色，UI 的所有颜色都通过这些角色引用。
+浅色配色：
+- primary #6750A4 / onPrimary #FFFFFF / primaryContainer #EADDFF / onPrimaryContainer #21005D
+- secondary #635A75 / secondaryContainer #E8DEF8 / onSecondaryContainer #1D192B / tertiaryContainer #FFD8E4 / onTertiaryContainer #31111D
+- surface #FEF7FF / surfaceContainerLow #F7F2FA / surfaceContainer #F3EDF7 / surfaceContainerHigh #ECE6F0 / surfaceContainerHighest #E6E0E9
+- onSurface #1D1B20 / onSurfaceVariant #49454F / outline #79747E / outlineVariant #CAC4D0
+- inverseSurface #322F35 / inverseOnSurface #F5EFF7 / inversePrimary #D0BCFF
+- error #B3261E / onError #FFFFFF / errorContainer #F9DEDC / onErrorContainer #410E0B
+深色配色：
+- primary #D2BCFC / onPrimary #32226F / primaryContainer #4C3889 / onPrimaryContainer #E9DDFF
+- secondary #CDC1E1 / secondaryContainer #4B425D / onSecondaryContainer #E9DDFD / tertiaryContainer #6C3644 / onTertiaryContainer #FDDAE1
+- surface #141317 / surfaceContainerLow #1C1B1F / surfaceContainer #201F23 / surfaceContainerHigh #2B292D / surfaceContainerHighest #363438
+- onSurface #E4E1E7 / onSurfaceVariant #C9C4D1 / outline #938F9B / outlineVariant #494550
+- inverseSurface #E4E1E7 / inverseOnSurface #313034 / inversePrimary #6750A4
+- error #F2B8B5 / onError #601410 / errorContainer #8C1D18 / onErrorContainer #F9DEDC
+
+## 形状、字体与动效
+- 圆角沿用 M3 Expressive 的默认值（按钮为胶囊形，卡片 20dp，对话框 28dp）。
+- 字体使用 Roboto。排版使用 M3 的标准字重。
+- 动效使用 MotionScheme.standard()：屏幕过渡和状态变化平滑、不回弹。
+
+## 屏幕结构
+共有 2 个屏幕：“Home”、“Home wide”。
+
+The screen the app opens on。
+“Home”屏幕（手机 412×892）从上到下依次如下（重叠的组件会特别说明）：
+- 上部放置标题为“Home”的顶部应用栏，左侧是 menu，右侧是 search 图标按钮。
+- 中部靠左放置由“Open”(填充)“Star”(色调)这 2 个按钮横向相连组成的按钮组。
+- 中部放置填充卡片。顶部是 https://example.com/photo.png 的图片（高 120dp），标题“Espresso”，正文“A short description of the picture”。
+- 下部放置4个项目的导航栏（“首页”(home)、“搜索”(search)、“收藏”(favorite)、“设置”(settings)，“搜索”为选中状态）。
+
+“Home wide”屏幕（桌面 1280×800）从上到下依次如下（重叠的组件会特别说明）：
+- 左缘：4个项目的侧边导航栏（“首页”(home)、“搜索”(search)、“收藏”(favorite)、“设置”(settings)，第一项为选中状态）。WideNavigationRail，折叠状态，宽 96dp。非模态布局：按当前宽度占据布局空间。顶部菜单按钮切换展开与折叠。
+- 中部靠左放置2项的列表，从上到下依次为 “Dark roast”（辅助文本“Yesterday”），左侧显示 local_cafe 图标，右侧显示 star 图标、“Light roast”（辅助文本“2 days ago”），左侧显示 local_cafe 图标，右侧显示 star 图标。
+- 中部靠左放置标签为“Search”的描边文本输入框（左侧显示 search 图标）。
+- 中部靠左放置多浏览布局的轮播（4 张卡片，高 180dp，每张卡片圆角 16dp，横向滚动）。
+
+## 行为与屏幕跳转
+- “Open”按钮：点击后以从右侧滑入的方式跳转到“Home wide”屏幕。
+- “Star”按钮：做成每次点击都切换开/关状态的切换按钮（开启时文字变为“Starred”、图标变为 star、样式变为填充）。
+- “Home”屏幕：向左滑动时跟随手指移动并以从右侧滑入的方式跳转到“Home wide”屏幕。
+
+## 各组件的样式
+以下是所用组件的参考。数值均为 M3 Expressive 的标准值，能用标准组件实现的就交给标准组件，并可根据内容适当调整。
+- 顶部应用栏：高 64dp，背景为 surface。标题用 titleLarge，左右图标按钮 48dp。滚动时变为 surfaceContainer 的标准行为即可。
+- 按钮：中号，高 56dp，完全圆角（胶囊形）。填充用 primary，色调用 secondaryContainer，描边用 1dp 的 outline 边框。横向相连的按钮组以 3dp 间距排列，只把相邻的内侧圆角缩小到 8dp，外侧保持圆角（M3 Expressive 的 Connected button group）。指定了高度的按钮遵循 M3 尺寸（XS 32dp / S 40dp / M 56dp / L 96dp / XL 136dp）：左右内边距、文字和图标取该尺寸的值，圆角为高度的一半。
+- 卡片：圆角 20dp。图片区域按每张卡片的描述放在顶部、底部、左侧、右侧或作为整卡背景（背景时从文字一侧加渐变遮罩：浅色文字用黑色，深色文字用白色）。图片保持宽高比并居中裁剪以填满区域。填充用 surfaceContainerHighest，浮起用 surfaceContainerLow 加 Level 1 阴影，描边用 1dp 的 outlineVariant 边框。标题用 titleMedium，正文用 bodyMedium。内边距 20dp，标题与正文间距 4dp，图片与文字间距 12dp。
+- 导航栏：高 80dp，背景为 surfaceContainer。选中项用 secondaryContainer 的胶囊指示器（宽 64dp、高 32dp）表示，图标为填充样式，标签用 labelMedium。
+- M3 Expressive 侧边导航栏：折叠宽 96dp，标签位于图标下方。展开宽 220dp，项目高 56dp，图标与标签横向排列，间距 8dp。沿用现有顶部应用栏配色，两种模式在折叠与展开时均使用 surfaceContainer 背景。选中项用 secondaryContainer 胶囊指示器，图标为 onSecondaryContainer，文字优先使用 secondary；若与实际背景（折叠为 surfaceContainer，展开为 secondaryContainer）的对比度低于 4.5:1，则分别使用 onSurface / onSecondaryContainer。顶部菜单按钮切换展开与折叠。非模态型位于内容旁；模态型展开时带遮罩覆盖内容并阻止背景交互，点击遮罩或按 Escape 关闭。
+- 列表项：高 72dp，左侧图标 24dp（未指定时放在 40dp 的 primaryContainer 圆形上），主文本用 bodyLarge，辅助文本用 bodyMedium 的 onSurfaceVariant，背景为指定的颜色角色（未指定则为 surfaceContainerLow）。上下相连的列表以 3dp 间距排列，外侧圆角 28dp，相邻内侧圆角 8dp（M3 Expressive 的列表样式）。
+- 文本输入框：高 56dp。描边样式圆角 16dp、边框为 outline；填充样式背景为 surfaceContainerHighest 并带下划线。聚焦时标签上浮，边框变为 2dp 的 primary。辅助文本用 bodySmall 显示在下方。
+- 轮播：M3 的 Carousel（Compose 为 HorizontalMultiBrowseCarousel / HorizontalUncontainedCarousel，Web 为横向滚动的卡片行）。卡片为圆角 16dp 的容器；多浏览与主图布局中首张卡片最大、越靠后越小，等宽滚动中每张卡片同宽，全屏布局中一张卡片占满整行。贴近屏幕左右边缘，起始留白 16dp，卡片间距 8dp。卡片标题放在卡片底部。
+
+## 整体原则
+- 先根据屏幕目的判断这是什么类型的应用，并实现该类应用通常应有的功能（新建、列表、详情、编辑、删除、搜索、设置等，视情况而定），即使草图中没有画出。
+- 把数据当作真实数据处理：用户创建的数据要持久化到浏览器（IndexedDB 等），重新加载后仍保留。不要放入虚拟或示例数据，没有数据时显示空状态提示。校验输入，删除和失败要有适当的确认或提示。
+- 草图没有写明的行为，根据屏幕目的和组件标签补全。未指定行为的按钮或项目要实现与其标签相符的操作（保存、发送、打开详情页等），不要什么都不做。
+- 布局只需保持意图（顺序、分组、相对位置），尺寸和间距可根据内容调整。若在真机上会出问题，宁可能用也不要死守草图。
+- 组件使用 Material Web 的标准组件，库里已有的组件不要自行绘制。
+- 颜色必须通过上面配色方案的角色名（primary、surfaceContainer 等）引用，不要写死颜色值。
+- 屏幕边缘留 16dp，组件之间 8〜16dp，排版使用 M3 的字体样式（titleLarge、bodyMedium 等）。
+- 写明“横向排成一行”的组件必须放进同一个 Row（横向容器）并在同一行显示，不要竖着堆叠或换行。行高以最高的组件为准，其余组件垂直居中。
+- 写明“内部叠放”的组件要绘制在该容器（容器框或卡片）之上（以容器为背景的 Box）。这种叠放是有意为之，不要因布局原因拆开或调整顺序。前后关系按描述顺序，后写的在前面。
+- 可点击的组件加涟漪和轻微缩放反馈。“返回”反向播放进入时的过渡动画，系统返回手势／返回键也要做同样的效果。
+- 图标使用 Material Symbols Rounded。
+- 不需要在浏览器上验证。实现完成后运行 production build 并提供其输出作为交付物。
+- 为主要逻辑编写单元测试，并在全部通过的状态下交付。
+- 同时支持浅色与深色配色方案，并跟随系统设置。"
+`;
