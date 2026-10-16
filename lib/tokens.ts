@@ -1703,6 +1703,8 @@ export type Item = {
   iconFill?: ColorToken | "none";
   /** data URL of a user-picked image */
   src?: string;
+  /** what a picture shows (also its accessibility description), for image parts and cards with a picture */
+  alt?: string;
   /** tap navigation to another frame */
   action?: Action;
   /** per-slot tap navigation for bars: "icon" / "icon2" on a top app bar, "tab:N" on a navigation bar */
@@ -2385,7 +2387,18 @@ export type Doc = {
   promptOptions?: string[];
   /** shape, type, motion and the light / dark and contrast switches */
   theme?: Theme;
+  /** files the author hands to the coding tool separately; the prompt names them */
+  assets?: Asset[];
 };
+
+/* ---------- files handed to the coding tool alongside the prompt ---------- */
+export type AssetKind = "logo" | "icon" | "image" | "font" | "other";
+export const ASSET_KINDS: AssetKind[] = ["logo", "icon", "image", "font", "other"];
+export const isAssetKind = (v: unknown): v is AssetKind => typeof v === "string" && ASSET_KINDS.some((k) => k === v);
+export const MAX_ASSETS = 40;
+/** a file the author gives the coding tool with the prompt: what it is called, what it is, and
+ *  where the app is to use it. The prompt names it and the tool is told not to invent a stand-in. */
+export type Asset = { id: string; name: string; kind: AssetKind; use?: string };
 
 export const defaultTabs = (): NavTab[] => NAV_TABS[getLang()].map((t) => ({ ...t }));
 

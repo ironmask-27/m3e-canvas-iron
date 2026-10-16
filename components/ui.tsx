@@ -625,11 +625,14 @@ export function Field({
   aiBusy,
   invalid,
   describedBy,
+  maxLength,
 }: {
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
   p: Palette;
+  /** how many characters the field takes at most */
+  maxLength?: number;
   icon?: string;
   /** a control standing inside the field after its mark, the words starting after it */
   leading?: React.ReactNode;
@@ -908,6 +911,7 @@ export function Field({
           className={maxHeight ? "no-scrollbar" : undefined}
           value={value}
           rows={rows}
+          maxLength={maxLength}
           onChange={(e) => onChange(grow ? e.target.value.replace(/[\r\n]+/g, " ") : e.target.value)}
           onKeyDown={grow ? (e) => { if (e.key === "Enter") e.preventDefault(); } : undefined}
           placeholder={placeholder}
@@ -929,6 +933,7 @@ export function Field({
       ) : (
         <input
           value={value}
+          maxLength={maxLength}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           aria-invalid={invalid || undefined}

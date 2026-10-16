@@ -5,6 +5,7 @@ import {
   Place,
   Platform,
   Action,
+  AssetKind,
   BACK_TARGET,
   H,
   hasMenu,
@@ -163,6 +164,14 @@ function selectedText(it: Item, lang: Lang): string {
   if (lang === "ko") return i === 0 || !label ? "첫 항목 선택됨" : `"${label}" 선택됨`;
   return i === 0 || !label ? "the first one is selected" : `"${label}" is selected`;
 }
+
+/** what each kind of separately supplied file is called in the prompt */
+const ASSET_KIND_TEXT: Record<Lang, Record<AssetKind, string>> = {
+  ja: { logo: "ロゴ", icon: "アイコン", image: "画像", font: "フォント", other: "その他" },
+  en: { logo: "logo", icon: "icon", image: "image", font: "font", other: "other" },
+  zh: { logo: "标志", icon: "图标", image: "图片", font: "字体", other: "其他" },
+  ko: { logo: "로고", icon: "아이콘", image: "이미지", font: "글꼴", other: "기타" },
+};
 
 const qj = (s: string) => `「${s.trim()}」`;
 const qe = (s: string) => `"${s.trim()}"`;
@@ -701,9 +710,23 @@ function styleSuffix(it: Item, lang: Lang): string {
   return out;
 }
 
-/** what a part is, plus the look its author gave it beyond its variant */
+/** what a picture shows, in the author's own words. Written only for a part that really shows
+ *  one: an image, or a card that keeps its image area. */
+function altSuffix(it: Item, lang: Lang): string {
+  const alt = it.alt ?? "";
+  if (!alt.trim()) return "";
+  if (it.kind !== "image" && !(it.kind === "card" && !it.noImage)) return "";
+  const text = trimEnd(alt);
+  const q = quote(lang);
+  if (lang === "ja") return ` （代替テキスト：${q(text)}）`;
+  if (lang === "zh") return ` （替代文本：${q(text)}）`;
+  if (lang === "ko") return ` (대체 텍스트: ${q(text)})`;
+  return ` (alt text: ${q(text)})`;
+}
+
+/** what a part is, plus the look its author gave it beyond its variant, plus what its picture shows */
 const itemText = (it: Item, lang: Lang) =>
-  (lang === "ja" ? itemJa(it) : lang === "zh" ? itemZh(it) : lang === "ko" ? itemKo(it) : itemEn(it)) + styleSuffix(it, lang);
+  (lang === "ja" ? itemJa(it) : lang === "zh" ? itemZh(it) : lang === "ko" ? itemKo(it) : itemEn(it)) + styleSuffix(it, lang) + altSuffix(it, lang);
 
 /* ================= connected runs ================= */
 
@@ -1588,6 +1611,8 @@ const PH = {
     hBehavior: "## 振る舞いと画面遷移",
     hStyle: "## 各部品のスタイル",
     styleIntro: "使っている部品ごとの目安です。数値は M3 Expressive の標準値なので、標準コンポーネントで実現できるものは標準に任せ、内容に合わせて調整して構いません。",
+    hAssets: "## 別途提供されるアセット",
+    assetsIntro: "以下のファイルはこのプロンプトとは別に渡される。名前のとおりに使い、代わりのものを作らない。",
     hGeneral: "## 全体の指針",
   },
   en: {
@@ -1632,6 +1657,8 @@ const PH = {
     hBehavior: "## Behavior and navigation",
     hStyle: "## Component styles",
     styleIntro: "Per-component guidance for the parts in use. The numbers are the M3 Expressive defaults: let the standard components handle whatever they already do, and adjust where the content calls for it.",
+    hAssets: "## Assets provided separately",
+    assetsIntro: "These files are handed over with this prompt. Use them by name and do not invent substitutes.",
     hGeneral: "## General guidance",
   },
   zh: {
@@ -1676,6 +1703,8 @@ const PH = {
     hBehavior: "## 行为与屏幕跳转",
     hStyle: "## 各组件的样式",
     styleIntro: "以下是所用组件的参考。数值均为 M3 Expressive 的标准值，能用标准组件实现的就交给标准组件，并可根据内容适当调整。",
+    hAssets: "## 另行提供的资源",
+    assetsIntro: "以下文件会与本提示词一起另行提供。请按名称使用，不要自行创造替代品。",
     hGeneral: "## 整体原则",
   },
   ko: {
@@ -1705,6 +1734,8 @@ const PH = {
     hBehavior: "## 동작 및 화면 전환",
     hStyle: "## 부품별 스타일",
     styleIntro: "사용된 부품별 지침입니다. 수치는 M3 Expressive 기본값이며 표준 컴포넌트가 제공하는 동작은 그대로 사용하고 내용에 맞게 조정할 수 있습니다.",
+    hAssets: "## 별도로 제공되는 에셋",
+    assetsIntro: "다음 파일은 이 프롬프트와 별도로 제공된다. 이름 그대로 사용하고 대체물을 만들지 않는다.",
     hGeneral: "## 전체 지침",
   },
 };
@@ -1880,6 +1911,21 @@ export function buildPrompt(doc: Doc, widths: Record<string, number>, onlyFrameI
     lines.push(ph.hStyle);
     lines.push(ph.styleIntro);
     for (const s of styleNotes) lines.push(`- ${s}`);
+  }
+
+  /* the files the author hands over with the prompt. They belong to the app rather than to one
+   * screen, so a single-screen prompt lists them too. */
+  const named = (doc.assets ?? []).filter((a) => hasText(a.name));
+  if (named.length) {
+    const end = lang === "ja" || lang === "zh" ? "。" : ".";
+    lines.push("");
+    lines.push(ph.hAssets);
+    lines.push(ph.assetsIntro);
+    for (const a of named) {
+      const label = ASSET_KIND_TEXT[lang][a.kind];
+      const use = (a.use ?? "").trim();
+      lines.push(use ? `- ${q(a.name.trim())} (${label}): ${trimEnd(use)}${end}` : `- ${q(a.name.trim())} (${label})`);
+    }
   }
 
   lines.push("");

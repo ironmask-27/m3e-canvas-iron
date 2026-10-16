@@ -15,6 +15,7 @@ import { buildPrompt, effectivePrompt } from "@/lib/prompt";
 import {
   Action,
   actionsOf,
+  Asset,
   Axis,
   BACK_TARGET,
   baseRadii,
@@ -498,6 +499,7 @@ export default function Editor({ initialLang, onReady }: { initialLang: Lang; on
   const [brief, setBrief] = useState("");
   const [promptEdit, setPromptEdit] = useState<string | undefined>(undefined);
   const [promptOptions, setPromptOptions] = useState<string[] | undefined>(undefined);
+  const [assets, setAssets] = useState<Asset[] | undefined>(undefined);
   /** the prompt's full-screen cover is up: the panel's own band steps aside while it is */
   const [promptCoverUp, setPromptCoverUp] = useState(false);
   /** the author's explicit target; null follows the screens (web once a desktop screen exists) */
@@ -761,6 +763,8 @@ export default function Editor({ initialLang, onReady }: { initialLang: Lang; on
     else if (reset) setPromptEdit(undefined);
     if (Array.isArray(doc.promptOptions)) setPromptOptions(doc.promptOptions);
     else if (reset) setPromptOptions(undefined);
+    if (Array.isArray(doc.assets)) setAssets(doc.assets);
+    else if (reset) setAssets(undefined);
     if (isPlatform(doc.platform)) setPlatform(doc.platform);
     else if (reset) setPlatform(null);
   };
@@ -890,7 +894,7 @@ export default function Editor({ initialLang, onReady }: { initialLang: Lang; on
 
   useEffect(() => {
     if (!loadedRef.current || editAccess !== "editable") return;
-    const json = JSON.stringify({ groups, frames, paletteKey, frame, title, brief, promptEdit, promptOptions, platform: platform ?? undefined, customPalette: customPalette ?? undefined, dynamicColor, theme });
+    const json = JSON.stringify({ groups, frames, paletteKey, frame, title, brief, promptEdit, promptOptions, assets, platform: platform ?? undefined, customPalette: customPalette ?? undefined, dynamicColor, theme });
     const saved = trySave(localStorage, DOC_KEY, json);
     if (!saved.ok) {
       if (!saveFailedRef.current) {
@@ -904,7 +908,7 @@ export default function Editor({ initialLang, onReady }: { initialLang: Lang; on
       saveFillRef.current = true;
       showToast(t("saveNearlyFull", lang), 6000, "warning");
     }
-  }, [editAccess, groups, frames, paletteKey, frame, title, brief, promptEdit, promptOptions, platform, customPalette, dynamicColor, theme]);
+  }, [editAccess, groups, frames, paletteKey, frame, title, brief, promptEdit, promptOptions, assets, platform, customPalette, dynamicColor, theme]);
 
   useEffect(() => {
     if (!loadedRef.current) return;
@@ -3486,8 +3490,8 @@ export default function Editor({ initialLang, onReady }: { initialLang: Lang; on
   }, [setGap]);
   const selectedSet = useMemo(() => new Set(selectedIds), [selectedIds]);
   const doc: Doc = useMemo(
-    () => ({ groups, frames, paletteKey, frame, title, brief, promptEdit, promptOptions, platform: platform ?? undefined, customPalette: customPalette ?? undefined, dynamicColor, theme }),
-    [groups, frames, paletteKey, frame, title, brief, promptEdit, promptOptions, platform, customPalette, dynamicColor, theme],
+    () => ({ groups, frames, paletteKey, frame, title, brief, promptEdit, promptOptions, assets, platform: platform ?? undefined, customPalette: customPalette ?? undefined, dynamicColor, theme }),
+    [groups, frames, paletteKey, frame, title, brief, promptEdit, promptOptions, assets, platform, customPalette, dynamicColor, theme],
   );
   /** the same document, for callbacks that were created on an earlier render */
   const docRef = useRef(doc);
@@ -4871,6 +4875,7 @@ export default function Editor({ initialLang, onReady }: { initialLang: Lang; on
                     if (patch.brief !== undefined) setBrief(patch.brief);
                     if ("promptEdit" in patch) setPromptEdit(patch.promptEdit);
                     if ("promptOptions" in patch) setPromptOptions(patch.promptOptions);
+                    if ("assets" in patch) setAssets(patch.assets);
                     if ("platform" in patch) setPlatform(isPlatform(patch.platform) ? patch.platform : null);
                   }}
                 />

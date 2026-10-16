@@ -1,4 +1,4 @@
-import { CAROUSEL_LAYOUTS, DATE_LAYOUTS, Doc, KIND_ORDER, Kind, TIME_LAYOUTS, VARIANTS, isCardAlign, isCardImagePos, isElevation, isPlace, isTextToken, isPlatform, isTrackThickness } from "./tokens";
+import { CAROUSEL_LAYOUTS, DATE_LAYOUTS, Doc, KIND_ORDER, Kind, MAX_ASSETS, TIME_LAYOUTS, VARIANTS, isAssetKind, isCardAlign, isCardImagePos, isElevation, isPlace, isTextToken, isPlatform, isTrackThickness } from "./tokens";
 
 /* A project file is the Doc as JSON, nothing more. Reading one back only checks
  * the shape the editor relies on; the same migrations that run on a saved
@@ -80,9 +80,15 @@ const validFrame = (frame: unknown) =>
   (frame.place === undefined || isPlace(frame.place)) &&
   (frame.length === undefined || (Number.isFinite(frame.length) && (frame.length as number) > 0));
 
+/** one file the author hands to the coding tool: it needs a name to be named, and a known kind */
+const validAsset = (a: unknown) =>
+  isRecord(a) && typeof a.id === "string" && a.id.length > 0 && typeof a.name === "string" && a.name.length > 0 && isAssetKind(a.kind) && optionalString(a.use);
+
+const validAssets = (assets: unknown) => assets === undefined || (Array.isArray(assets) && assets.length <= MAX_ASSETS && assets.every(validAsset));
+
 /** whether a parsed file has the shape of a document the editor can open */
 export const isProject = (value: unknown): value is Doc =>
-  isRecord(value) && Array.isArray(value.groups) && Array.isArray(value.frames) && value.groups.every(validGroup) && value.frames.every(validFrame) && (value.platform === undefined || isPlatform(value.platform)) && (value.promptOptions === undefined || (Array.isArray(value.promptOptions) && value.promptOptions.every((o) => typeof o === "string")));
+  isRecord(value) && Array.isArray(value.groups) && Array.isArray(value.frames) && value.groups.every(validGroup) && value.frames.every(validFrame) && (value.platform === undefined || isPlatform(value.platform)) && (value.promptOptions === undefined || (Array.isArray(value.promptOptions) && value.promptOptions.every((o) => typeof o === "string"))) && validAssets(value.assets);
 
 /** the file name a project is saved under: m3e-canvas, followed by the app's name when it has one */
 export const projectFileName = (doc: Doc) => {

@@ -22,6 +22,7 @@ import {
   isPhoneFrame,
   variantStyle,
 } from "@/lib/tokens";
+import { AltTextRow } from "./AltTextRow";
 import { AppearanceRows } from "./AppearanceRows";
 import { ButtonInspector } from "./ButtonInspector";
 import { PartInspector } from "./PartInspector";
@@ -464,6 +465,9 @@ export function Inspector({
     );
   }
 
+  /* a part that shows a picture can be described: an image part, or a card that keeps its image area */
+  const showAlt = item.kind === "image" || (item.kind === "card" && !item.noImage);
+
   /* everything else shares one panel, built from the button's own */
   return (
     <PartInspector
@@ -481,7 +485,12 @@ export function Inspector({
       allFrames={allFrames ?? frames}
       measured={widths?.[item.id]}
       railStandalone={railStandalone}
-      footer={<AppearanceRows item={item} palette={p} onChange={onChange} />}
+      footer={
+        <>
+          {showAlt && <AltTextRow item={item} palette={p} onChange={onChange} />}
+          <AppearanceRows item={item} palette={p} onChange={onChange} />
+        </>
+      }
     />
   );
 }
