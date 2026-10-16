@@ -5,6 +5,7 @@ import { PromptMark, buildPrompt, promptMarks } from "@/lib/prompt";
 import { Doc, Palette, Platform, defaultPlatformOf } from "@/lib/tokens";
 import { Icon } from "./M3Node";
 import { Field, IconBtn, Segmented } from "./ui";
+import { AssetsEditor } from "./AssetsEditor";
 import { t, useLang } from "@/lib/i18n";
 
 /* The prompt tab: what the sketch says to a model, and the few things said about the app as a
@@ -534,6 +535,7 @@ export function PromptPanel({
           >
             <Field value={doc.title} onChange={(title) => onDoc({ title })} placeholder={t("appName", lang)} p={p} icon="smartphone" />
             <FadeArea value={doc.brief} onChange={(brief) => onDoc({ brief })} placeholder={t("brief", lang)} p={p} />
+            <AssetsEditor assets={doc.assets ?? []} onChange={(assets) => onDoc({ assets })} p={p} />
           </div>
           <div
             className="no-scrollbar"

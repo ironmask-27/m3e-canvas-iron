@@ -1,4 +1,4 @@
-import { CAROUSEL_LAYOUTS, DATE_LAYOUTS, Doc, KIND_ORDER, Kind, TIME_LAYOUTS, VARIANTS, isCardAlign, isCardImagePos, isPlace, isTextToken, isPlatform, isTrackThickness } from "./tokens";
+import { CAROUSEL_LAYOUTS, DATE_LAYOUTS, Doc, KIND_ORDER, Kind, MAX_ASSETS, TIME_LAYOUTS, VARIANTS, isAssetKind, isCardAlign, isCardImagePos, isElevation, isPlace, isTextToken, isPlatform, isTrackThickness } from "./tokens";
 
 /* A project file is the Doc as JSON, nothing more. Reading one back only checks
  * the shape the editor relies on; the same migrations that run on a saved
@@ -16,10 +16,20 @@ const validCorners = (c: unknown) => c === undefined || (isRecord(c) && ["tl", "
 /** the layouts a carousel and the two pickers may be saved with */
 const LAYOUTS = new Set<string>([...CAROUSEL_LAYOUTS, ...DATE_LAYOUTS, ...TIME_LAYOUTS].map((l) => l.key));
 const optionalNumber = (v: unknown) => v === undefined || Number.isFinite(v);
+const optionalString = (v: unknown) => v === undefined || typeof v === "string";
+
+/** a part's own look: opacity is a whole percent inside the range the panel offers, elevation an M3 level */
+const validStyle = (s: unknown) =>
+  s === undefined ||
+  (isRecord(s) &&
+    (s.opacity === undefined || (typeof s.opacity === "number" && Number.isInteger(s.opacity) && s.opacity >= 10 && s.opacity <= 100)) &&
+    (s.elevation === undefined || isElevation(s.elevation)));
 
 const validItem = (item: unknown) =>
   isRecord(item) &&
   validCorners(item.corners) &&
+  validStyle(item.style) &&
+  optionalString(item.alt) &&
   (item.railExpanded === undefined || typeof item.railExpanded === "boolean") &&
   (item.railModal === undefined || typeof item.railModal === "boolean") &&
   (item.trackThickness === undefined || isTrackThickness(item.trackThickness)) &&
@@ -53,6 +63,7 @@ const validGroup = (group: unknown) =>
   Number.isFinite(group.y) &&
   (group.axis === "x" || group.axis === "y") &&
   (group.locked === undefined || typeof group.locked === "boolean") &&
+  optionalString(group.component) &&
   Array.isArray(group.items) &&
   group.items.length > 0 &&
   group.items.every(validItem);
@@ -69,9 +80,15 @@ const validFrame = (frame: unknown) =>
   (frame.place === undefined || isPlace(frame.place)) &&
   (frame.length === undefined || (Number.isFinite(frame.length) && (frame.length as number) > 0));
 
+/** one file the author hands to the coding tool: it needs a name to be named, and a known kind */
+const validAsset = (a: unknown) =>
+  isRecord(a) && typeof a.id === "string" && a.id.length > 0 && typeof a.name === "string" && a.name.length > 0 && isAssetKind(a.kind) && optionalString(a.use);
+
+const validAssets = (assets: unknown) => assets === undefined || (Array.isArray(assets) && assets.length <= MAX_ASSETS && assets.every(validAsset));
+
 /** whether a parsed file has the shape of a document the editor can open */
 export const isProject = (value: unknown): value is Doc =>
-  isRecord(value) && Array.isArray(value.groups) && Array.isArray(value.frames) && value.groups.every(validGroup) && value.frames.every(validFrame) && (value.platform === undefined || isPlatform(value.platform)) && (value.promptOptions === undefined || (Array.isArray(value.promptOptions) && value.promptOptions.every((o) => typeof o === "string")));
+  isRecord(value) && Array.isArray(value.groups) && Array.isArray(value.frames) && value.groups.every(validGroup) && value.frames.every(validFrame) && (value.platform === undefined || isPlatform(value.platform)) && (value.promptOptions === undefined || (Array.isArray(value.promptOptions) && value.promptOptions.every((o) => typeof o === "string"))) && validAssets(value.assets);
 
 /** the file name a project is saved under: m3e-canvas, followed by the app's name when it has one */
 export const projectFileName = (doc: Doc) => {

@@ -5,6 +5,7 @@ import {
   Place,
   Platform,
   Action,
+  AssetKind,
   BACK_TARGET,
   H,
   hasMenu,
@@ -19,6 +20,7 @@ import {
   buttonHeightOf,
   buttonSizeKeyOf,
   CHIP_H_MIN,
+  ELEVATION_DP,
   chipHeightOf,
   linkUrlOf,
   Doc,
@@ -45,6 +47,7 @@ import {
   isPhoneFrame,
   scrollsOf,
   isWideRail,
+  normalizeStyle,
   normalizeTheme,
   paletteOf,
   railWidth,
@@ -161,6 +164,45 @@ function selectedText(it: Item, lang: Lang): string {
   if (lang === "ko") return i === 0 || !label ? "첫 항목 선택됨" : `"${label}" 선택됨`;
   return i === 0 || !label ? "the first one is selected" : `"${label}" is selected`;
 }
+
+/** One bullet for a section the author named as a reusable component: how many places it appears
+ *  in, on which screens, and what the coding tool is to do about it. */
+function componentBullet(lang: Lang, name: string, count: number, screens: string[]): string {
+  const q = quote(lang);
+  const n = q(name);
+  const many = count >= 2;
+  const sep = lang === "ja" || lang === "zh" ? "、" : ", ";
+  if (lang === "ja") {
+    const on = screens.length ? `（${screens.map((s) => `${s}画面`).join(sep)}）` : "";
+    const at = `${count} か所に登場する${on}`;
+    return many ? `- ${n}: ${at}。1 つのコンポーネントとして実装し、内容を引数にして使い回す。` : `- ${n}: ${at}。独立したコンポーネントとして実装する。`;
+  }
+  if (lang === "zh") {
+    const on = screens.length ? `（在${screens.map((s) => `${s}屏幕`).join(sep)}）` : "";
+    const at = `出现 ${count} 次${on}`;
+    return many
+      ? `- ${n}：${at}。只实现一次，作为独立组件复用，内容通过参数传入。`
+      : `- ${n}：${at}。作为独立组件实现。`;
+  }
+  if (lang === "ko") {
+    const on = screens.length ? `(${screens.map((s) => `${s} 화면`).join(sep)})` : "";
+    const at = `${count}곳에 나온다${on}`;
+    return many
+      ? `- ${n}: ${at}. 하나의 컴포넌트로 한 번만 구현하고 내용을 매개변수로 받아 재사용한다.`
+      : `- ${n}: ${at}. 독립된 컴포넌트로 구현한다.`;
+  }
+  const on = screens.length ? ` (on the ${screens.join(" and ")} ${screens.length > 1 ? "screens" : "screen"})` : "";
+  const at = many ? `appears ${count} times${on}` : `appears once${on}`;
+  return many ? `- ${n}: ${at}. Build it once as its own component and reuse it, taking its content as parameters.` : `- ${n}: ${at}. Build it as its own component.`;
+}
+
+/** what each kind of separately supplied file is called in the prompt */
+const ASSET_KIND_TEXT: Record<Lang, Record<AssetKind, string>> = {
+  ja: { logo: "ロゴ", icon: "アイコン", image: "画像", font: "フォント", other: "その他" },
+  en: { logo: "logo", icon: "icon", image: "image", font: "font", other: "other" },
+  zh: { logo: "标志", icon: "图标", image: "图片", font: "字体", other: "其他" },
+  ko: { logo: "로고", icon: "아이콘", image: "이미지", font: "글꼴", other: "기타" },
+};
 
 const qj = (s: string) => `「${s.trim()}」`;
 const qe = (s: string) => `"${s.trim()}"`;
@@ -675,7 +717,47 @@ function boxCorners(it: Item, lang: Lang): string {
   return `corner radius ${t}dp top / ${b}dp bottom`;
 }
 
-const itemText = (it: Item, lang: Lang) => (lang === "ja" ? itemJa(it) : lang === "zh" ? itemZh(it) : lang === "ko" ? itemKo(it) : itemEn(it));
+/** the appearance the author gave a part, in words: its opacity first, then a box's elevation.
+ *  Nothing is written when the part wears its normal look, so an untouched sketch reads as before. */
+function styleSuffix(it: Item, lang: Lang): string {
+  const s = normalizeStyle(it.style);
+  if (!s) return "";
+  let out = "";
+  if (s.opacity !== undefined) {
+    if (lang === "ja") out += ` （不透明度 ${s.opacity}%）`;
+    else if (lang === "zh") out += ` （不透明度 ${s.opacity}%）`;
+    else if (lang === "ko") out += ` (불투명도 ${s.opacity}%)`;
+    else out += ` (drawn at ${s.opacity}% opacity)`;
+  }
+  /* only a box carries elevation: on any other kind it would mean nothing */
+  const level = s.elevation;
+  if (it.kind === "box" && level) {
+    const dp = ELEVATION_DP[level];
+    if (lang === "ja") out += ` （エレベーション レベル${level}、${dp}dp の影）`;
+    else if (lang === "zh") out += ` （阴影层级 ${level}，${dp}dp）`;
+    else if (lang === "ko") out += ` (고도 레벨 ${level}, ${dp}dp 그림자)`;
+    else out += ` (with a level ${level} shadow, ${dp}dp)`;
+  }
+  return out;
+}
+
+/** what a picture shows, in the author's own words. Written only for a part that really shows
+ *  one: an image, or a card that keeps its image area. */
+function altSuffix(it: Item, lang: Lang): string {
+  const alt = it.alt ?? "";
+  if (!alt.trim()) return "";
+  if (it.kind !== "image" && !(it.kind === "card" && !it.noImage)) return "";
+  const text = trimEnd(alt);
+  const q = quote(lang);
+  if (lang === "ja") return ` （代替テキスト：${q(text)}）`;
+  if (lang === "zh") return ` （替代文本：${q(text)}）`;
+  if (lang === "ko") return ` (대체 텍스트: ${q(text)})`;
+  return ` (alt text: ${q(text)})`;
+}
+
+/** what a part is, plus the look its author gave it beyond its variant, plus what its picture shows */
+const itemText = (it: Item, lang: Lang) =>
+  (lang === "ja" ? itemJa(it) : lang === "zh" ? itemZh(it) : lang === "ko" ? itemKo(it) : itemEn(it)) + styleSuffix(it, lang) + altSuffix(it, lang);
 
 /* ================= connected runs ================= */
 
@@ -686,38 +768,38 @@ function groupText(g: Group, lang: Lang): string {
   const vt = VARIANT_TEXT[lang];
   const same = g.items.every((it) => it.variant === g.items[0].variant);
   if (lang === "ja") {
-    if (kind === "listItem") return `${g.items.length}項目のリスト。上から ${g.items.map(itemJa).join("、")}`;
-    if (kind === "chip") return `${g.items.map((it) => q(it.label) + (it.checked ? "(選択中)" : "")).join("")}のチップが横に並ぶチップグループ${chipRunHeightText(g.items, "ja")}`;
-    if (kind === "iconButton") return `${g.items.map((it) => it.icon ?? "空").join("・")} のアイコンボタンが連結したボタングループ`;
+    if (kind === "listItem") return `${g.items.length}項目のリスト。上から ${g.items.map((it) => itemText(it, "ja")).join("、")}`;
+    if (kind === "chip") return `${g.items.map((it) => q(it.label) + (it.checked ? "(選択中)" : "") + styleSuffix(it, "ja")).join("")}のチップが横に並ぶチップグループ${chipRunHeightText(g.items, "ja")}`;
+    if (kind === "iconButton") return `${g.items.map((it) => (it.icon ?? "空") + styleSuffix(it, "ja")).join("・")} のアイコンボタンが連結したボタングループ`;
     const names = same
-      ? g.items.map((it) => q(it.label || "ラベルなし")).join("")
-      : g.items.map((it) => `${q(it.label || "ラベルなし")}(${vt[it.variant]})`).join("");
+      ? g.items.map((it) => q(it.label || "ラベルなし") + styleSuffix(it, "ja")).join("")
+      : g.items.map((it) => `${q(it.label || "ラベルなし")}(${vt[it.variant]})${styleSuffix(it, "ja")}`).join("");
     return `${names}の${g.items.length}つのボタンが横に連結したボタングループ${same ? `（${vt[g.items[0].variant]}）` : ""}`;
   }
   if (lang === "zh") {
-    if (kind === "listItem") return `${g.items.length}项的列表，从上到下依次为 ${g.items.map(itemZh).join("、")}`;
-    if (kind === "chip") return `由${g.items.map((it) => q(it.label) + (it.checked ? "(选中)" : "")).join("")}横向排列组成的标签片组${chipRunHeightText(g.items, "zh")}`;
-    if (kind === "iconButton") return `由 ${g.items.map((it) => it.icon ?? "空").join("、")} 图标按钮相连组成的按钮组`;
+    if (kind === "listItem") return `${g.items.length}项的列表，从上到下依次为 ${g.items.map((it) => itemText(it, "zh")).join("、")}`;
+    if (kind === "chip") return `由${g.items.map((it) => q(it.label) + (it.checked ? "(选中)" : "") + styleSuffix(it, "zh")).join("")}横向排列组成的标签片组${chipRunHeightText(g.items, "zh")}`;
+    if (kind === "iconButton") return `由 ${g.items.map((it) => (it.icon ?? "空") + styleSuffix(it, "zh")).join("、")} 图标按钮相连组成的按钮组`;
     const names = same
-      ? g.items.map((it) => q(it.label || "无标签")).join("")
-      : g.items.map((it) => `${q(it.label || "无标签")}(${vt[it.variant]})`).join("");
+      ? g.items.map((it) => q(it.label || "无标签") + styleSuffix(it, "zh")).join("")
+      : g.items.map((it) => `${q(it.label || "无标签")}(${vt[it.variant]})${styleSuffix(it, "zh")}`).join("");
     return `由${names}这 ${g.items.length} 个按钮横向相连组成的按钮组${same ? `（${vt[g.items[0].variant]}）` : ""}`;
   }
   if (lang === "ko") {
-    if (kind === "listItem") return `${g.items.length}개 항목의 목록. 위에서부터 ${g.items.map(itemKo).join(", ")}`;
-    if (kind === "chip") return `${g.items.map((it) => q(it.label) + (it.checked ? "(선택됨)" : "")).join(", ")} 칩을 가로로 배치한 칩 그룹${chipRunHeightText(g.items, "ko")}`;
-    if (kind === "iconButton") return `${g.items.map((it) => it.icon ?? "빈 아이콘").join(", ")} 아이콘 버튼을 연결한 버튼 그룹`;
+    if (kind === "listItem") return `${g.items.length}개 항목의 목록. 위에서부터 ${g.items.map((it) => itemText(it, "ko")).join(", ")}`;
+    if (kind === "chip") return `${g.items.map((it) => q(it.label) + (it.checked ? "(선택됨)" : "") + styleSuffix(it, "ko")).join(", ")} 칩을 가로로 배치한 칩 그룹${chipRunHeightText(g.items, "ko")}`;
+    if (kind === "iconButton") return `${g.items.map((it) => (it.icon ?? "빈 아이콘") + styleSuffix(it, "ko")).join(", ")} 아이콘 버튼을 연결한 버튼 그룹`;
     const names = same
-      ? g.items.map((it) => q(it.label || "레이블 없음")).join(", ")
-      : g.items.map((it) => `${q(it.label || "레이블 없음")}(${vt[it.variant]})`).join(", ");
+      ? g.items.map((it) => q(it.label || "레이블 없음") + styleSuffix(it, "ko")).join(", ")
+      : g.items.map((it) => `${q(it.label || "레이블 없음")}(${vt[it.variant]})${styleSuffix(it, "ko")}`).join(", ");
     return `${names} 버튼 ${g.items.length}개를 가로로 연결한 버튼 그룹${same ? `(${vt[g.items[0].variant]})` : ""}`;
   }
-  if (kind === "listItem") return `a list of ${g.items.length} items, top to bottom: ${g.items.map(itemEn).join("; ")}`;
-  if (kind === "chip") return `a chip group: ${g.items.map((it) => q(it.label) + (it.checked ? " (selected)" : "")).join(", ")}${chipRunHeightText(g.items, "en")}`;
-  if (kind === "iconButton") return `a connected group of icon buttons: ${g.items.map((it) => it.icon ?? "empty").join(", ")}`;
+  if (kind === "listItem") return `a list of ${g.items.length} items, top to bottom: ${g.items.map((it) => itemText(it, "en")).join("; ")}`;
+  if (kind === "chip") return `a chip group: ${g.items.map((it) => q(it.label) + (it.checked ? " (selected)" : "") + styleSuffix(it, "en")).join(", ")}${chipRunHeightText(g.items, "en")}`;
+  if (kind === "iconButton") return `a connected group of icon buttons: ${g.items.map((it) => (it.icon ?? "empty") + styleSuffix(it, "en")).join(", ")}`;
   const names = same
-    ? g.items.map((it) => q(it.label || "unlabeled")).join(", ")
-    : g.items.map((it) => `${q(it.label || "unlabeled")} (${vt[it.variant]})`).join(", ");
+    ? g.items.map((it) => q(it.label || "unlabeled") + styleSuffix(it, "en")).join(", ")
+    : g.items.map((it) => `${q(it.label || "unlabeled")} (${vt[it.variant]})${styleSuffix(it, "en")}`).join(", ");
   return `a connected button group of ${g.items.length}${same ? ` ${vt[g.items[0].variant]}` : ""} buttons: ${names}`;
 }
 
@@ -1085,6 +1167,54 @@ const WIDE_RAIL_STYLE: Record<Lang, string> = {
   zh: "M3 Expressive 侧边导航栏：折叠宽 96dp，标签位于图标下方。展开宽 220dp，项目高 56dp，图标与标签横向排列，间距 8dp。沿用现有顶部应用栏配色，两种模式在折叠与展开时均使用 surfaceContainer 背景。选中项用 secondaryContainer 胶囊指示器，图标为 onSecondaryContainer，文字优先使用 secondary；若与实际背景（折叠为 surfaceContainer，展开为 secondaryContainer）的对比度低于 4.5:1，则分别使用 onSurface / onSecondaryContainer。顶部菜单按钮切换展开与折叠。非模态型位于内容旁；模态型展开时带遮罩覆盖内容并阻止背景交互，点击遮罩或按 Escape 关闭。",
   ko: "M3 Expressive 내비게이션 레일: 접으면 너비 96dp, 아이콘 아래에 레이블을 배치한다. 펼치면 너비 220dp, 항목 높이 56dp, 아이콘과 레이블을 8dp 간격으로 가로 배치한다. 기존 상단 앱 바와 맞추어 두 모드의 접힌 상태와 펼친 상태 모두 surfaceContainer 배경을 사용한다. 선택 항목은 secondaryContainer 알약 표시기, onSecondaryContainer 아이콘, 레이블은 secondary를 우선 사용한다. 실제 배경(접힘: surfaceContainer, 펼침: secondaryContainer)과의 대비가 4.5:1 미만이면 각각 onSurface / onSecondaryContainer를 사용한다. 상단 메뉴 버튼으로 펼치기와 접기를 전환한다. 비모달은 콘텐츠 옆에 배치하고 모달은 펼칠 때 스크림과 함께 콘텐츠를 덮어 배경 조작을 차단한다. 스크림을 탭하거나 Escape를 누르면 닫힌다.",
 };
+
+/* ---------- the spacing a screen's own parts sit at ---------- */
+
+/** the margins and gaps the general guidance already asks every screen for */
+export const STANDARD_MARGIN = 16;
+export const STANDARD_GAP = 8;
+/** how far under the standard a screen must sit before it is worth saying so: a dp or two is
+ *  how the sketch was dragged, not a decision */
+const SPACING_TOLERANCE = 2;
+/** dp read off a sketch land on the 4dp grid the design system uses, rounded down so the prompt
+ *  never asks for more room than the sketch actually leaves */
+const tight4 = (n: number) => Math.max(4, Math.floor(n / 4) * 4);
+
+/** What one screen's own parts say about its spacing: how far the outermost rows keep from the
+ *  screen's edges, and the gap between the rows that follow one another.
+ *
+ *  Only spacing tighter than the standard is reported. Rooms left over between parts are how the
+ *  sketch was dragged — the zone words already say where a row sits, and the general guidance
+ *  lets the sizes and gaps be adjusted to the content — so speaking up about them would pin the
+ *  app to an accident. A screen the author packed tighter than 16dp and 8dp is the opposite: the
+ *  default would undo a choice, so the line says so.
+ *
+ *  A row that runs into the screen's edges by design (a bar, a sheet) says nothing about the
+ *  margin, and rows that overlap say nothing about the gap. */
+function spacingOf(groups: Group[], rect: Rect, widths: Record<string, number>): { margin?: number; gap?: number } {
+  const rows = rowsOf(layoutTree(groups, widths)).map((row) => ({
+    l: Math.min(...row.map((n) => n.bb.l)),
+    r: Math.max(...row.map((n) => n.bb.r)),
+    t: Math.min(...row.map((n) => n.bb.t)),
+    b: Math.max(...row.map((n) => n.bb.b)),
+  }));
+  const insets = rows.map((r) => Math.min(r.l - rect.l, rect.r - r.r)).filter((i) => i > 0);
+  const gaps: number[] = [];
+  for (let i = 1; i < rows.length; i++) {
+    const above = rows[i - 1];
+    const below = rows[i];
+    const shares = Math.min(above.r, below.r) - Math.max(above.l, below.l) > SPACING_TOLERANCE;
+    const gap = below.t - above.b;
+    if (shares && gap > SPACING_TOLERANCE) gaps.push(gap);
+  }
+  gaps.sort((a, b) => a - b);
+  const margin = insets.length ? Math.min(...insets) : undefined;
+  const gap = gaps.length ? gaps[Math.floor(gaps.length / 2)] : undefined;
+  return {
+    margin: margin !== undefined && margin < STANDARD_MARGIN - SPACING_TOLERANCE ? tight4(margin) : undefined,
+    gap: gap !== undefined && gap < STANDARD_GAP - SPACING_TOLERANCE ? tight4(gap) : undefined,
+  };
+}
 
 function describeScreen(lines: string[], groups: Group[], frameRect: Rect | null, widths: Record<string, number>, lang: Lang) {
   if (!groups.length) return;
@@ -1509,6 +1639,13 @@ const viewportOf = (frames: Frame[], phone: boolean): Viewport => {
   const phones = frames.filter(isPhoneFrame).length;
   return phones === frames.length ? "phone" : phones === 0 ? "desktop" : "mixed";
 };
+/** The other frames a screen is drawn again in, at another size. Naming two frames alike is how
+ *  the author says they are one screen at two widths rather than two screens. */
+const twinFrames = (f: Frame, frames: Frame[]) => {
+  const name = f.name.trim();
+  return name ? frames.filter((o) => o.id !== f.id && o.name.trim() === name && isPhoneFrame(o) !== isPhoneFrame(f)) : [];
+};
+
 /** a screen's size, written only when the document mixes sizes */
 const sizeLabel = (f: Frame, vp: Viewport, lang: Lang): string | undefined => {
   if (vp !== "mixed") return undefined;
@@ -1555,11 +1692,20 @@ const PH = {
     placement: (place: Place) => (place === "center" ? "本文の部品は画面の縦中央にまとめて配置します。" : place === "bottom" ? "本文の部品は画面の下側（ナビゲーションバーの上）に寄せて配置します。" : "本文の部品は画面の高さいっぱいに均等な間隔で配置します（1 行だけなら縦中央）。"),
     scrolls: (length: number, view: number) => `画面の長さは ${length}dp で、端末に映る ${view}dp より長いため、本文は縦にスクロールします。バーと、コンテンツの上に浮かぶ部品（FAB、スナックバーなど）はスクロールしても固定のままです。`,
     screenHead: (name: string, bg: string | undefined, has: boolean, size?: string) => `${name}画面${size || bg ? `（${[size, bg ? `背景は ${bg}` : ""].filter(Boolean).join("、")}）` : ""}${has ? "は上から順に次の通りです。重なっている部品はその旨を書いています。" : "はまだ空です。"}`,
+    spacing: (margin?: number, gap?: number) => {
+      const parts = [margin !== undefined ? `画面端から ${margin}dp` : "", gap !== undefined ? `行と行の間は ${gap}dp` : ""].filter(Boolean);
+      return `この画面は標準より詰めます: ${parts.join("、")}。`;
+    },
+    adaptive: (name: string, sizes: string[]) => `${name}は同じ画面を 2 つの幅で描いたものです（${sizes.map((s) => `${s} レイアウト`).join("、")}）。1 つとして実装し、スマホのレイアウトを画面の中身、幅の広いレイアウトをその並べ替えとして読んでください。`,
+    adaptivePart: (other: string) => `${other} レイアウトと同じ画面をこの幅に並べ替えたものです: 部品と実装はそのまま使い、並べ方だけを変えます。`,
     loose: "画面の外に置かれている部品（共通パーツや参考）:",
     freeform: "画面を上から順に説明します。",
     hBehavior: "## 振る舞いと画面遷移",
     hStyle: "## 各部品のスタイル",
     styleIntro: "使っている部品ごとの目安です。数値は M3 Expressive の標準値なので、標準コンポーネントで実現できるものは標準に任せ、内容に合わせて調整して構いません。",
+    hComponents: "## 再利用するコンポーネント",
+    hAssets: "## 別途提供されるアセット",
+    assetsIntro: "以下のファイルはこのプロンプトとは別に渡される。名前のとおりに使い、代わりのものを作らない。",
     hGeneral: "## 全体の指針",
   },
   en: {
@@ -1595,15 +1741,25 @@ const PH = {
     hTheme: "## Shape, type and motion",
     hLayout: "## Layout",
     empty: "Nothing has been placed on the screen yet.",
-    screens: (names: string[]) => `There are ${names.length} screens: ${names.join(", ")}.`,
+    screens: (names: string[]) => (names.length === 1 ? `There is one screen: ${names[0]}.` : `There are ${names.length} screens: ${names.join(", ")}.`),
     placement: (place: Place) => (place === "center" ? "The body parts sit together in the vertical center of the screen." : place === "bottom" ? "The body parts sit toward the bottom of the screen, above the navigation bar." : "The body parts are spread over the screen height with equal gaps (a single row sits in the vertical center)."),
     scrolls: (length: number, view: number) => `The screen runs ${length}dp, longer than the ${view}dp the device shows, so its body scrolls vertically; the bars and anything floating over the content (a FAB, a snackbar) stay fixed while it scrolls.`,
     screenHead: (name: string, bg: string | undefined, has: boolean, size?: string) => `The ${name} screen${size || bg ? ` (${[size, bg ? `background ${bg}` : ""].filter(Boolean).join(", ")})` : ""}${has ? ", from top to bottom (overlapping parts are called out as such):" : " is still empty."}`,
+    spacing: (margin?: number, gap?: number) => {
+      const parts = [margin !== undefined ? `${margin}dp from the screen edges` : "", gap !== undefined ? `${gap}dp between the rows` : ""].filter(Boolean);
+      return `This screen is laid out tighter than the standard: ${parts.join(" and ")}.`;
+    },
+    adaptive: (name: string, sizes: string[]) =>
+      `${name} is drawn twice, as one screen at two widths (${sizes.map((s) => `a ${s} layout`).join(" and ")}). Build it once and let it adapt: the phone layout says what the screen contains, and the layout for the wider size says how the same content is rearranged.`,
+    adaptivePart: (other: string) => `The same screen as the ${other} layout, arranged for this width: keep its parts and its code paths and change only the arrangement.`,
     loose: "Parts placed outside the screens (shared parts or references):",
     freeform: "The screen, from top to bottom:",
     hBehavior: "## Behavior and navigation",
     hStyle: "## Component styles",
     styleIntro: "Per-component guidance for the parts in use. The numbers are the M3 Expressive defaults: let the standard components handle whatever they already do, and adjust where the content calls for it.",
+    hComponents: "## Reusable components",
+    hAssets: "## Assets provided separately",
+    assetsIntro: "These files are handed over with this prompt. Use them by name and do not invent substitutes.",
     hGeneral: "## General guidance",
   },
   zh: {
@@ -1643,11 +1799,20 @@ const PH = {
     placement: (place: Place) => (place === "center" ? "内容作为整体，在屏幕内容区域内纵向居中排列。" : place === "bottom" ? "内容区域中的组件靠屏幕底部（导航栏上方）放置。" : "各行内容在屏幕内容区域内纵向均匀分布（只有一行时纵向居中）。"),
     scrolls: (length: number, view: number) => `屏幕总长 ${length}dp，超过设备可显示的 ${view}dp，因此内容区域可纵向滚动；栏以及浮在内容之上的组件（FAB、Snackbar 等）在滚动时保持固定。`,
     screenHead: (name: string, bg: string | undefined, has: boolean, size?: string) => `${name}屏幕${size || bg ? `（${[size, bg ? `背景为 ${bg}` : ""].filter(Boolean).join("，")}）` : ""}${has ? "从上到下依次如下（重叠的组件会特别说明）：" : "目前为空。"}`,
+    spacing: (margin?: number, gap?: number) => {
+      const parts = [margin !== undefined ? `距屏幕边缘 ${margin}dp` : "", gap !== undefined ? `行与行之间 ${gap}dp` : ""].filter(Boolean);
+      return `本屏幕比标准更紧凑：${parts.join("，")}。`;
+    },
+    adaptive: (name: string, sizes: string[]) => `${name}画了两遍，是同一屏幕的两种宽度（${sizes.map((s) => `${s} 布局`).join("、")}）。请只实现一次：手机布局说明屏幕的内容，宽屏布局说明同样内容如何重排。`,
+    adaptivePart: (other: string) => `与 ${other} 布局是同一个屏幕，只是按此宽度重排：沿用其组件与代码，只改变排列方式。`,
     loose: "放在屏幕之外的组件（公共部件或参考）：",
     freeform: "从上到下说明屏幕内容：",
     hBehavior: "## 行为与屏幕跳转",
     hStyle: "## 各组件的样式",
     styleIntro: "以下是所用组件的参考。数值均为 M3 Expressive 的标准值，能用标准组件实现的就交给标准组件，并可根据内容适当调整。",
+    hComponents: "## 可复用组件",
+    hAssets: "## 另行提供的资源",
+    assetsIntro: "以下文件会与本提示词一起另行提供。请按名称使用，不要自行创造替代品。",
     hGeneral: "## 整体原则",
   },
   ko: {
@@ -1672,11 +1837,20 @@ const PH = {
     placement: (place: Place) => (place === "center" ? "본문 부품은 화면 세로 가운데에 모아 배치한다." : place === "bottom" ? "본문 부품은 화면 아래쪽(내비게이션 바 위)에 붙여 배치한다." : "본문 부품은 화면 높이에 걸쳐 같은 간격으로 배치한다(한 줄뿐이면 세로 가운데)."),
     scrolls: (length: number, view: number) => `화면 길이는 ${length}dp로 기기에 보이는 ${view}dp보다 길어서 본문이 세로로 스크롤된다. 바와 콘텐츠 위에 떠 있는 부품(FAB, 스낵바 등)은 스크롤해도 고정된다.`,
     screenHead: (name: string, bg: string | undefined, has: boolean, size?: string) => `${name} 화면${size || bg ? `(${[size, bg ? `배경 ${bg}` : ""].filter(Boolean).join(", ")})` : ""}. ${has ? "위에서부터 다음과 같습니다. 겹친 부품은 별도로 표시합니다." : "아직 비어 있습니다."}`,
+    spacing: (margin?: number, gap?: number) => {
+      const parts = [margin !== undefined ? `화면 가장자리에서 ${margin}dp` : "", gap !== undefined ? `행 사이 ${gap}dp` : ""].filter(Boolean);
+      return `이 화면은 표준보다 촘촘하게 배치한다: ${parts.join(", ")}.`;
+    },
+    adaptive: (name: string, sizes: string[]) => `${name}은(는) 같은 화면을 두 가지 너비로 그린 것이다(${sizes.map((s) => `${s} 레이아웃`).join(", ")}). 하나로 구현하고, 휴대전화 레이아웃을 화면의 내용, 너비가 넓은 레이아웃을 그 내용의 재배치로 읽는다.`,
+    adaptivePart: (other: string) => `${other} 레이아웃과 같은 화면을 이 너비에 맞게 재배치한 것이다. 부품과 구현은 그대로 쓰고 배치만 바꾼다.`,
     loose: "화면 밖에 놓인 부품(공통 부품 또는 참고):",
     freeform: "화면을 위에서부터 설명합니다.",
     hBehavior: "## 동작 및 화면 전환",
     hStyle: "## 부품별 스타일",
     styleIntro: "사용된 부품별 지침입니다. 수치는 M3 Expressive 기본값이며 표준 컴포넌트가 제공하는 동작은 그대로 사용하고 내용에 맞게 조정할 수 있습니다.",
+    hComponents: "## 재사용 컴포넌트",
+    hAssets: "## 별도로 제공되는 에셋",
+    assetsIntro: "다음 파일은 이 프롬프트와 별도로 제공된다. 이름 그대로 사용하고 대체물을 만들지 않는다.",
     hGeneral: "## 전체 지침",
   },
 };
@@ -1820,12 +1994,38 @@ export function buildPrompt(doc: Doc, widths: Record<string, number>, onlyFrameI
   if (groups.length === 0) {
     lines.push(ph.empty);
   } else if (frames.length > 0) {
-    if (frames.length > 1) lines.push(ph.screens(frames.map((f) => q(f.name || ph.screen))));
+    if (frames.length > 1) {
+      /* a name is listed once however many widths carry it — the link between the widths is
+         said at the screen itself — while unnamed screens are counted one by one */
+      const names = [...new Set(frames.filter((f) => f.name.trim()).map((f) => f.name.trim()))];
+      const blank = frames.filter((f) => !f.name.trim()).length;
+      lines.push(ph.screens([...names.map(q), ...Array.from({ length: blank }, () => q(ph.screen))]));
+    }
+    /** the sizes of a screen drawn at two widths, said once however many layouts it has */
+    const saidWidths = new Set<string>();
     frames.forEach((f, i) => {
       const gs = byFrame.get(f.id) ?? [];
       if (i > 0 || frames.length > 1) lines.push("");
       if (hasText(f.note)) lines.push(lang === "ja" || lang === "zh" ? `${trimEnd(f.note!)}。` : `${trimEnd(f.note!)}.`);
       lines.push(ph.screenHead(q(f.name || ph.screen), f.bg && f.bg !== "surface" ? f.bg : undefined, gs.length > 0, sizeLabel(f, viewport, lang)));
+      /* A screen the author drew again at another width under the same name: the link is said
+         once, and the wide layout is then read as the same screen rearranged rather than as a
+         second screen that would drift away from it. */
+      const twins = twinFrames(f, frames);
+      if (twins.length) {
+        const size = (o: Frame) => sizeLabel(o, viewport, lang) ?? `${frameSizeOf(o).w}×${frameSizeOf(o).h}`;
+        const name = f.name.trim();
+        if (!saidWidths.has(name)) {
+          saidWidths.add(name);
+          const sizes = [...twins, f].sort((a, b) => frameSizeOf(a).w - frameSizeOf(b).w).map(size);
+          lines.push(ph.adaptive(q(name), sizes));
+        }
+        if (!isPhoneFrame(f)) lines.push(ph.adaptivePart(size(twins[0])));
+      }
+      /* the screen's own spacing when it differs from the standard the general guidance asks
+         for, so a tight list or a wide margin survives into the app */
+      const spacing = gs.length ? spacingOf(gs, frameRect(f), widths) : {};
+      if (spacing.margin !== undefined || spacing.gap !== undefined) lines.push(ph.spacing(spacing.margin, spacing.gap));
       if (gs.length > 0 && f.place && f.place !== "top") lines.push(ph.placement(f.place));
       if (gs.length > 0 && scrollsOf(f)) lines.push(ph.scrolls(frameLengthOf(f), frameSizeOf(f).h));
       describeScreen(lines, gs, frameRect(f), widths, lang);
@@ -1852,6 +2052,45 @@ export function buildPrompt(doc: Doc, widths: Record<string, number>, onlyFrameI
     lines.push(ph.hStyle);
     lines.push(ph.styleIntro);
     for (const s of styleNotes) lines.push(`- ${s}`);
+  }
+
+  /* The sections the author named as reusable components, read from the document's own groups
+   * before the hand-made ones are written out run by run. A name promises the coding tool one
+   * component; it does not link the copies to each other. */
+  const components: { name: string; count: number; screens: string[] }[] = [];
+  for (const g of doc.groups) {
+    const name = trimEnd(g.component ?? "");
+    if (!name) continue;
+    if (only && frameOfGroup(g, allFrames, widths)?.id !== only.id) continue;
+    const f = frameOfGroup(g, allFrames, widths);
+    const screen = f ? q(f.name || ph.screen) : null;
+    const found = components.find((c) => c.name === name);
+    if (!found) {
+      components.push({ name, count: 1, screens: screen ? [screen] : [] });
+      continue;
+    }
+    found.count += 1;
+    if (screen && !found.screens.includes(screen)) found.screens.push(screen);
+  }
+  if (components.length) {
+    lines.push("");
+    lines.push(ph.hComponents);
+    for (const c of components) lines.push(componentBullet(lang, c.name, c.count, c.screens));
+  }
+
+  /* the files the author hands over with the prompt. They belong to the app rather than to one
+   * screen, so a single-screen prompt lists them too. */
+  const named = (doc.assets ?? []).filter((a) => hasText(a.name));
+  if (named.length) {
+    const end = lang === "ja" || lang === "zh" ? "。" : ".";
+    lines.push("");
+    lines.push(ph.hAssets);
+    lines.push(ph.assetsIntro);
+    for (const a of named) {
+      const label = ASSET_KIND_TEXT[lang][a.kind];
+      const use = (a.use ?? "").trim();
+      lines.push(use ? `- ${q(a.name.trim())} (${label}): ${trimEnd(use)}${end}` : `- ${q(a.name.trim())} (${label})`);
+    }
   }
 
   lines.push("");

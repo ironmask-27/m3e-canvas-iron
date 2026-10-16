@@ -15,6 +15,7 @@ import { buildPrompt, effectivePrompt } from "@/lib/prompt";
 import {
   Action,
   actionsOf,
+  Asset,
   Axis,
   BACK_TARGET,
   baseRadii,
@@ -127,6 +128,7 @@ import { AiSettings, DEFAULT_AI, hasKey, isSecureUrl, loadAiSettings, proposeBeh
 import { barSlotOf, bodyRect, carryFrame, holdsEdgeBar, maxFrameLength, minFrameLength, pullInto, stretchFrame, tidyFrame } from "@/lib/tidy";
 import { constrainModalRails, modalRailOf, updateRail } from "@/lib/rail";
 import { isProject, readProject, saveProject } from "@/lib/project";
+import { storageFill, trySave } from "@/lib/storage";
 import { hasShareHash, readShareHash } from "@/lib/share";
 import { LoadingIndicator } from "@/components/Loading";
 import { draftDesign } from "@/lib/ai";
@@ -497,6 +499,7 @@ export default function Editor({ initialLang, onReady }: { initialLang: Lang; on
   const [brief, setBrief] = useState("");
   const [promptEdit, setPromptEdit] = useState<string | undefined>(undefined);
   const [promptOptions, setPromptOptions] = useState<string[] | undefined>(undefined);
+  const [assets, setAssets] = useState<Asset[] | undefined>(undefined);
   /** the prompt's full-screen cover is up: the panel's own band steps aside while it is */
   const [promptCoverUp, setPromptCoverUp] = useState(false);
   /** the author's explicit target; null follows the screens (web once a desktop screen exists) */
@@ -610,6 +613,10 @@ export default function Editor({ initialLang, onReady }: { initialLang: Lang; on
   /** groups that must reposition without animating on the next render */
   const instantRef = useRef<Set<string>>(new Set());
   const loadedRef = useRef(false);
+  /** the last document write failed: the notice is shown once per failure streak */
+  const saveFailedRef = useRef(false);
+  /** the browser's storage is nearly full: the notice is shown once per page session */
+  const saveFillRef = useRef(false);
   const initialLangRef = useRef<Lang>(initialLang);
   /** A saved document or the first viewport initialization prevents later reseeding. */
   const hadDocRef = useRef(false);
@@ -756,6 +763,8 @@ export default function Editor({ initialLang, onReady }: { initialLang: Lang; on
     else if (reset) setPromptEdit(undefined);
     if (Array.isArray(doc.promptOptions)) setPromptOptions(doc.promptOptions);
     else if (reset) setPromptOptions(undefined);
+    if (Array.isArray(doc.assets)) setAssets(doc.assets);
+    else if (reset) setAssets(undefined);
     if (isPlatform(doc.platform)) setPlatform(doc.platform);
     else if (reset) setPlatform(null);
   };
@@ -885,13 +894,21 @@ export default function Editor({ initialLang, onReady }: { initialLang: Lang; on
 
   useEffect(() => {
     if (!loadedRef.current || editAccess !== "editable") return;
-    try {
-      localStorage.setItem(
-        DOC_KEY,
-        JSON.stringify({ groups, frames, paletteKey, frame, title, brief, promptEdit, promptOptions, platform: platform ?? undefined, customPalette: customPalette ?? undefined, dynamicColor, theme }),
-      );
-    } catch {}
-  }, [editAccess, groups, frames, paletteKey, frame, title, brief, promptEdit, promptOptions, platform, customPalette, dynamicColor, theme]);
+    const json = JSON.stringify({ groups, frames, paletteKey, frame, title, brief, promptEdit, promptOptions, assets, platform: platform ?? undefined, customPalette: customPalette ?? undefined, dynamicColor, theme });
+    const saved = trySave(localStorage, DOC_KEY, json);
+    if (!saved.ok) {
+      if (!saveFailedRef.current) {
+        saveFailedRef.current = true;
+        showToast(t("saveFailed", lang), 6000, "warning");
+      }
+      return;
+    }
+    saveFailedRef.current = false;
+    if (!saveFillRef.current && storageFill(json) >= 0.8) {
+      saveFillRef.current = true;
+      showToast(t("saveNearlyFull", lang), 6000, "warning");
+    }
+  }, [editAccess, groups, frames, paletteKey, frame, title, brief, promptEdit, promptOptions, assets, platform, customPalette, dynamicColor, theme]);
 
   useEffect(() => {
     if (!loadedRef.current) return;
@@ -3473,8 +3490,8 @@ export default function Editor({ initialLang, onReady }: { initialLang: Lang; on
   }, [setGap]);
   const selectedSet = useMemo(() => new Set(selectedIds), [selectedIds]);
   const doc: Doc = useMemo(
-    () => ({ groups, frames, paletteKey, frame, title, brief, promptEdit, promptOptions, platform: platform ?? undefined, customPalette: customPalette ?? undefined, dynamicColor, theme }),
-    [groups, frames, paletteKey, frame, title, brief, promptEdit, promptOptions, platform, customPalette, dynamicColor, theme],
+    () => ({ groups, frames, paletteKey, frame, title, brief, promptEdit, promptOptions, assets, platform: platform ?? undefined, customPalette: customPalette ?? undefined, dynamicColor, theme }),
+    [groups, frames, paletteKey, frame, title, brief, promptEdit, promptOptions, assets, platform, customPalette, dynamicColor, theme],
   );
   /** the same document, for callbacks that were created on an earlier render */
   const docRef = useRef(doc);
@@ -3630,6 +3647,14 @@ export default function Editor({ initialLang, onReady }: { initialLang: Lang; on
   const toggleGroupLock = (id: string) => {
     snapshot();
     setGroups((prev) => prev.map((g) => (g.id === id ? { ...g, locked: !g.locked } : g)));
+  };
+
+  /** names the selected group as a reusable component; a locked group keeps the name it has */
+  const setGroupComponent = (name: string | undefined) => {
+    const g = selectedGroup;
+    if (!g || g.locked) return;
+    snapshot();
+    setGroups((prev) => prev.map((x) => (x.id === g.id ? { ...x, component: name?.trim() ? name : undefined } : x)));
   };
 
   /** The parts of one group in a new order: reading order for a connected run, back to
@@ -4846,6 +4871,8 @@ export default function Editor({ initialLang, onReady }: { initialLang: Lang; on
                   selectionKey={selectedIds.join(" ")}
                   onGroup={groupSelected}
                   onUngroup={ungroupSelected}
+                  component={selectedGroup?.component}
+                  onComponentName={setGroupComponent}
                 />
               ) : (
                 <PromptPanel
@@ -4858,6 +4885,7 @@ export default function Editor({ initialLang, onReady }: { initialLang: Lang; on
                     if (patch.brief !== undefined) setBrief(patch.brief);
                     if ("promptEdit" in patch) setPromptEdit(patch.promptEdit);
                     if ("promptOptions" in patch) setPromptOptions(patch.promptOptions);
+                    if ("assets" in patch) setAssets(patch.assets);
                     if ("platform" in patch) setPlatform(isPlatform(patch.platform) ? patch.platform : null);
                   }}
                 />

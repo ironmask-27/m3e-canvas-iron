@@ -31,6 +31,7 @@ export function PanelShell({
   head,
   tabs,
   children,
+  footer,
 }: {
   p: Palette;
   locked?: boolean;
@@ -39,6 +40,9 @@ export function PanelShell({
   /** the row of tabs, if the part has one: it floats over what scrolls rather than sitting on it */
   tabs?: React.ReactNode;
   children: React.ReactNode;
+  /** rows that belong to every tab of the panel, under what the tab itself shows; they scroll
+   *  with the rest, so a locked part keeps them out of reach too */
+  footer?: React.ReactNode;
 }) {
   /* The cover leaves in one of two ways. Turned off at its own switch, it undoes itself in plain
      sight: the switch goes off first and the blur only then. Gone for any other reason -- the
@@ -73,6 +77,7 @@ export function PanelShell({
           style={{ padding: `${tabs ? PANEL_TABS_H + PANEL_TABS_GAP : PANEL_FADE_H / 2}px 12px 20px`, overflowY: "auto", height: "100%" }}
         >
           {children}
+          {footer}
         </div>
         {/* the tabs keep their place while the rest scrolls under them, and the panel's own colour
             is drawn behind them, thinning out to nothing by where the row ends: what passes up
@@ -620,11 +625,14 @@ export function Field({
   aiBusy,
   invalid,
   describedBy,
+  maxLength,
 }: {
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
   p: Palette;
+  /** how many characters the field takes at most */
+  maxLength?: number;
   icon?: string;
   /** a control standing inside the field after its mark, the words starting after it */
   leading?: React.ReactNode;
@@ -903,6 +911,7 @@ export function Field({
           className={maxHeight ? "no-scrollbar" : undefined}
           value={value}
           rows={rows}
+          maxLength={maxLength}
           onChange={(e) => onChange(grow ? e.target.value.replace(/[\r\n]+/g, " ") : e.target.value)}
           onKeyDown={grow ? (e) => { if (e.key === "Enter") e.preventDefault(); } : undefined}
           placeholder={placeholder}
@@ -924,6 +933,7 @@ export function Field({
       ) : (
         <input
           value={value}
+          maxLength={maxLength}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           aria-invalid={invalid || undefined}

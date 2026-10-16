@@ -146,6 +146,7 @@ export function ButtonInspector({
   allFrames,
   onShowOn,
   onShowMenu,
+  footer,
 }: {
   ai: AiHooks;
   item: Item;
@@ -168,6 +169,8 @@ export function ButtonInspector({
   onShowOn?: (on: boolean) => void;
   /** asks the canvas to show this FAB's menu open while it is being set up */
   onShowMenu?: (open: boolean) => void;
+  /** rows every tab of the panel ends with: the part's own look */
+  footer?: React.ReactNode;
 }) {
   const lang = useLang();
   const spec = KIND_SPEC[item.kind];
@@ -290,6 +293,7 @@ export function ButtonInspector({
       onUnlock={onToggleLock}
       head={<PartHeader kind={item.kind} p={p} locked={!!locked} onDuplicate={onDuplicate} onToggleLock={onToggleLock} onDelete={onDelete} />}
       tabs={<PartTabs value={tab} onChange={setTab} p={p} />}
+      footer={footer}
     >
       {tab === "design" && (
         <div role="tabpanel" id="part-panel-design" aria-labelledby="part-tab-design">
