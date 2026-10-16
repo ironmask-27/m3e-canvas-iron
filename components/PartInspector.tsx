@@ -377,6 +377,7 @@ export function PartInspector({
   allFrames,
   measured,
   railStandalone = false,
+  footer,
 }: {
   ai: AiHooks;
   item: Item;
@@ -394,6 +395,8 @@ export function PartInspector({
   measured?: number;
   /** the rail owns its group, so it may overlay the screen when expanded */
   railStandalone?: boolean;
+  /** rows every tab of the panel ends with: the part's own look */
+  footer?: React.ReactNode;
 }) {
   const lang = useLang();
   const [tab, setTab] = useState<Tab>("design");
@@ -781,6 +784,7 @@ export function PartInspector({
       onUnlock={onToggleLock}
       head={<PartHeader kind={item.kind} p={p} locked={!!locked} onDuplicate={onDuplicate} onToggleLock={onToggleLock} onDelete={onDelete} />}
       tabs={<PartTabs value={tab} onChange={setTab} p={p} />}
+      footer={footer}
     >
       {tab === "design" && (
         <div role="tabpanel" id="part-panel-design" aria-labelledby="part-tab-design">

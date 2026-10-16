@@ -6,6 +6,7 @@ import {
   FAB_MENU_CLOSE,
   FAB_MENU_GAP,
   FAB_MENU_ITEM_H,
+  Elevation,
   H,
   Item,
   Kind,
@@ -46,6 +47,7 @@ import {
   onToken,
   scaleR,
   menuRises,
+  normalizeStyle,
   sizeOf,
   splitMetrics,
   variantShadow,
@@ -1785,6 +1787,23 @@ function shadowOf(item: Item): string {
 
 export type { Radii };
 
+/** M3's elevation levels as one shadow each, for a box the author has lifted off the screen */
+const ELEVATION_SHADOW: Record<Elevation, string> = {
+  0: "none",
+  1: "0 1px 3px rgba(0,0,0,0.20), 0 2px 6px rgba(0,0,0,0.10)",
+  2: "0 1px 4px rgba(0,0,0,0.20), 0 3px 8px rgba(0,0,0,0.12)",
+  3: "0 3px 8px rgba(0,0,0,0.18), 0 1px 3px rgba(0,0,0,0.12)",
+  4: "0 4px 12px rgba(0,0,0,0.18), 0 2px 4px rgba(0,0,0,0.12)",
+  5: "0 8px 24px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.10)",
+};
+
+/** the shadow the part is drawn with: a box carries the level it was given, everything else
+ *  keeps the shadow its kind asks for */
+const shadowFor = (item: Item): string => {
+  const look = normalizeStyle(item.style);
+  return item.kind === "box" && look?.elevation ? ELEVATION_SHADOW[look.elevation] : shadowOf(item);
+};
+
 /** Corner radii are driven continuously by the magnet; a stiff spring keeps them on the pointer. */
 const RADIUS_TWEEN = { type: "spring" as const, stiffness: 900, damping: 48, mass: 0.4 };
 
@@ -1836,6 +1855,9 @@ export function M3Node({
   const drawn = menu.drawn && !menuOpen(item) ? ({ ...item, [fabOpen]: true } as Item) : item;
   const r = radii ?? baseRadii(item);
   const size = sizeOf(drawn, widths);
+  /* the author's own look for this part: how far it is faded, and how far a box is lifted */
+  const look = normalizeStyle(drawn.style);
+  const opacity = look?.opacity !== undefined ? look.opacity / 100 : undefined;
   const measured = isMeasured(drawn);
   const clips = !NO_BOX.includes(item.kind) && !menuOpen(drawn) && item.kind !== "textField" && item.kind !== "select";
   /* only the button family lights up from inside; everything else is left as it was drawn */
@@ -1913,7 +1935,8 @@ export function M3Node({
         userSelect: "none",
         touchAction: "none",
         boxSizing: "border-box",
-        boxShadow: shadowOf(drawn),
+        boxShadow: shadowFor(drawn),
+        opacity,
         outline: selected ? `2px solid ${palette.primary}` : "2px solid transparent",
         outlineOffset: 3,
         /* a part that changes size with its screen, or with the size the author picked,
@@ -1951,6 +1974,7 @@ export function M3Static({
   const size = sizeOf(item, {});
   const measured = isMeasured(item);
   const clips = !NO_BOX.includes(item.kind) && !menuOpen(item) && item.kind !== "textField" && item.kind !== "select";
+  const look = normalizeStyle(item.style);
   return (
     <div
       style={{
@@ -1961,7 +1985,8 @@ export function M3Static({
         alignItems: "center",
         overflow: clips ? "hidden" : "visible",
         boxSizing: "border-box",
-        boxShadow: shadowOf(item),
+        boxShadow: shadowFor(item),
+        opacity: look?.opacity !== undefined ? look.opacity / 100 : undefined,
         borderTopLeftRadius: r.tl,
         borderTopRightRadius: r.tr,
         borderBottomLeftRadius: r.bl,

@@ -31,6 +31,7 @@ export function PanelShell({
   head,
   tabs,
   children,
+  footer,
 }: {
   p: Palette;
   locked?: boolean;
@@ -39,6 +40,9 @@ export function PanelShell({
   /** the row of tabs, if the part has one: it floats over what scrolls rather than sitting on it */
   tabs?: React.ReactNode;
   children: React.ReactNode;
+  /** rows that belong to every tab of the panel, under what the tab itself shows; they scroll
+   *  with the rest, so a locked part keeps them out of reach too */
+  footer?: React.ReactNode;
 }) {
   /* The cover leaves in one of two ways. Turned off at its own switch, it undoes itself in plain
      sight: the switch goes off first and the blur only then. Gone for any other reason -- the
@@ -73,6 +77,7 @@ export function PanelShell({
           style={{ padding: `${tabs ? PANEL_TABS_H + PANEL_TABS_GAP : PANEL_FADE_H / 2}px 12px 20px`, overflowY: "auto", height: "100%" }}
         >
           {children}
+          {footer}
         </div>
         {/* the tabs keep their place while the rest scrolls under them, and the panel's own colour
             is drawn behind them, thinning out to nothing by where the row ends: what passes up

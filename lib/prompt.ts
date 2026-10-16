@@ -19,6 +19,7 @@ import {
   buttonHeightOf,
   buttonSizeKeyOf,
   CHIP_H_MIN,
+  ELEVATION_DP,
   chipHeightOf,
   linkUrlOf,
   Doc,
@@ -45,6 +46,7 @@ import {
   isPhoneFrame,
   scrollsOf,
   isWideRail,
+  normalizeStyle,
   normalizeTheme,
   paletteOf,
   railWidth,
@@ -675,7 +677,33 @@ function boxCorners(it: Item, lang: Lang): string {
   return `corner radius ${t}dp top / ${b}dp bottom`;
 }
 
-const itemText = (it: Item, lang: Lang) => (lang === "ja" ? itemJa(it) : lang === "zh" ? itemZh(it) : lang === "ko" ? itemKo(it) : itemEn(it));
+/** the appearance the author gave a part, in words: its opacity first, then a box's elevation.
+ *  Nothing is written when the part wears its normal look, so an untouched sketch reads as before. */
+function styleSuffix(it: Item, lang: Lang): string {
+  const s = normalizeStyle(it.style);
+  if (!s) return "";
+  let out = "";
+  if (s.opacity !== undefined) {
+    if (lang === "ja") out += ` （不透明度 ${s.opacity}%）`;
+    else if (lang === "zh") out += ` （不透明度 ${s.opacity}%）`;
+    else if (lang === "ko") out += ` (불투명도 ${s.opacity}%)`;
+    else out += ` (drawn at ${s.opacity}% opacity)`;
+  }
+  /* only a box carries elevation: on any other kind it would mean nothing */
+  const level = s.elevation;
+  if (it.kind === "box" && level) {
+    const dp = ELEVATION_DP[level];
+    if (lang === "ja") out += ` （エレベーション レベル${level}、${dp}dp の影）`;
+    else if (lang === "zh") out += ` （阴影层级 ${level}，${dp}dp）`;
+    else if (lang === "ko") out += ` (고도 레벨 ${level}, ${dp}dp 그림자)`;
+    else out += ` (with a level ${level} shadow, ${dp}dp)`;
+  }
+  return out;
+}
+
+/** what a part is, plus the look its author gave it beyond its variant */
+const itemText = (it: Item, lang: Lang) =>
+  (lang === "ja" ? itemJa(it) : lang === "zh" ? itemZh(it) : lang === "ko" ? itemKo(it) : itemEn(it)) + styleSuffix(it, lang);
 
 /* ================= connected runs ================= */
 
@@ -686,7 +714,7 @@ function groupText(g: Group, lang: Lang): string {
   const vt = VARIANT_TEXT[lang];
   const same = g.items.every((it) => it.variant === g.items[0].variant);
   if (lang === "ja") {
-    if (kind === "listItem") return `${g.items.length}項目のリスト。上から ${g.items.map(itemJa).join("、")}`;
+    if (kind === "listItem") return `${g.items.length}項目のリスト。上から ${g.items.map((it) => itemText(it, "ja")).join("、")}`;
     if (kind === "chip") return `${g.items.map((it) => q(it.label) + (it.checked ? "(選択中)" : "")).join("")}のチップが横に並ぶチップグループ${chipRunHeightText(g.items, "ja")}`;
     if (kind === "iconButton") return `${g.items.map((it) => it.icon ?? "空").join("・")} のアイコンボタンが連結したボタングループ`;
     const names = same
@@ -695,7 +723,7 @@ function groupText(g: Group, lang: Lang): string {
     return `${names}の${g.items.length}つのボタンが横に連結したボタングループ${same ? `（${vt[g.items[0].variant]}）` : ""}`;
   }
   if (lang === "zh") {
-    if (kind === "listItem") return `${g.items.length}项的列表，从上到下依次为 ${g.items.map(itemZh).join("、")}`;
+    if (kind === "listItem") return `${g.items.length}项的列表，从上到下依次为 ${g.items.map((it) => itemText(it, "zh")).join("、")}`;
     if (kind === "chip") return `由${g.items.map((it) => q(it.label) + (it.checked ? "(选中)" : "")).join("")}横向排列组成的标签片组${chipRunHeightText(g.items, "zh")}`;
     if (kind === "iconButton") return `由 ${g.items.map((it) => it.icon ?? "空").join("、")} 图标按钮相连组成的按钮组`;
     const names = same
@@ -704,7 +732,7 @@ function groupText(g: Group, lang: Lang): string {
     return `由${names}这 ${g.items.length} 个按钮横向相连组成的按钮组${same ? `（${vt[g.items[0].variant]}）` : ""}`;
   }
   if (lang === "ko") {
-    if (kind === "listItem") return `${g.items.length}개 항목의 목록. 위에서부터 ${g.items.map(itemKo).join(", ")}`;
+    if (kind === "listItem") return `${g.items.length}개 항목의 목록. 위에서부터 ${g.items.map((it) => itemText(it, "ko")).join(", ")}`;
     if (kind === "chip") return `${g.items.map((it) => q(it.label) + (it.checked ? "(선택됨)" : "")).join(", ")} 칩을 가로로 배치한 칩 그룹${chipRunHeightText(g.items, "ko")}`;
     if (kind === "iconButton") return `${g.items.map((it) => it.icon ?? "빈 아이콘").join(", ")} 아이콘 버튼을 연결한 버튼 그룹`;
     const names = same
@@ -712,7 +740,7 @@ function groupText(g: Group, lang: Lang): string {
       : g.items.map((it) => `${q(it.label || "레이블 없음")}(${vt[it.variant]})`).join(", ");
     return `${names} 버튼 ${g.items.length}개를 가로로 연결한 버튼 그룹${same ? `(${vt[g.items[0].variant]})` : ""}`;
   }
-  if (kind === "listItem") return `a list of ${g.items.length} items, top to bottom: ${g.items.map(itemEn).join("; ")}`;
+  if (kind === "listItem") return `a list of ${g.items.length} items, top to bottom: ${g.items.map((it) => itemText(it, "en")).join("; ")}`;
   if (kind === "chip") return `a chip group: ${g.items.map((it) => q(it.label) + (it.checked ? " (selected)" : "")).join(", ")}${chipRunHeightText(g.items, "en")}`;
   if (kind === "iconButton") return `a connected group of icon buttons: ${g.items.map((it) => it.icon ?? "empty").join(", ")}`;
   const names = same

@@ -452,6 +452,27 @@ export type Theme = {
 
 export const DEFAULT_THEME: Theme = { dark: false, bothModes: false, contrast: "standard", shape: "rounded", font: "roboto", emphasized: false, motion: "standard" };
 
+/** M3 elevation levels 0..5 (0, 1, 3, 6, 8 and 12 dp) */
+export type Elevation = 0 | 1 | 2 | 3 | 4 | 5;
+/** how far each level lifts a surface off the screen, in dp */
+export const ELEVATION_DP: Record<Elevation, number> = { 0: 0, 1: 1, 2: 3, 3: 6, 4: 8, 5: 12 };
+export const ELEVATIONS: Elevation[] = [0, 1, 2, 3, 4, 5];
+export const isElevation = (v: unknown): v is Elevation => typeof v === "number" && ELEVATIONS.some((e) => e === v);
+
+/** how a part is drawn beyond its variant: its opacity in percent, and for a box the
+ *  elevation level it sits at */
+export type ItemStyle = { opacity?: number; elevation?: Elevation };
+
+/** the appearance a part really carries: fields left at their default are dropped, so a part
+ *  drawn as usual keeps no `style` at all and a document without one behaves as it always did */
+export function normalizeStyle(s: ItemStyle | undefined): ItemStyle | undefined {
+  if (!s) return undefined;
+  const out: ItemStyle = {};
+  if (typeof s.opacity === "number" && s.opacity !== 100) out.opacity = s.opacity;
+  if (isElevation(s.elevation) && s.elevation !== 0) out.elevation = s.elevation;
+  return Object.keys(out).length ? out : undefined;
+}
+
 /** a stored theme with any missing or unknown field replaced by its default */
 export function normalizeTheme(t: Partial<Theme> | undefined): Theme {
   const d = DEFAULT_THEME;
@@ -1676,6 +1697,8 @@ export type Item = {
   size2?: number;
   /** palette token used as background (boxes, list items) */
   fill?: ColorToken;
+  /** how the part is drawn beyond its variant: opacity 10..100 (percent), elevation level for boxes */
+  style?: ItemStyle;
   /** background behind a list item's leading icon; "none" draws the icon bare */
   iconFill?: ColorToken | "none";
   /** data URL of a user-picked image */

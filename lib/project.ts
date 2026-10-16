@@ -1,4 +1,4 @@
-import { CAROUSEL_LAYOUTS, DATE_LAYOUTS, Doc, KIND_ORDER, Kind, TIME_LAYOUTS, VARIANTS, isCardAlign, isCardImagePos, isPlace, isTextToken, isPlatform, isTrackThickness } from "./tokens";
+import { CAROUSEL_LAYOUTS, DATE_LAYOUTS, Doc, KIND_ORDER, Kind, TIME_LAYOUTS, VARIANTS, isCardAlign, isCardImagePos, isElevation, isPlace, isTextToken, isPlatform, isTrackThickness } from "./tokens";
 
 /* A project file is the Doc as JSON, nothing more. Reading one back only checks
  * the shape the editor relies on; the same migrations that run on a saved
@@ -16,10 +16,20 @@ const validCorners = (c: unknown) => c === undefined || (isRecord(c) && ["tl", "
 /** the layouts a carousel and the two pickers may be saved with */
 const LAYOUTS = new Set<string>([...CAROUSEL_LAYOUTS, ...DATE_LAYOUTS, ...TIME_LAYOUTS].map((l) => l.key));
 const optionalNumber = (v: unknown) => v === undefined || Number.isFinite(v);
+const optionalString = (v: unknown) => v === undefined || typeof v === "string";
+
+/** a part's own look: opacity is a whole percent inside the range the panel offers, elevation an M3 level */
+const validStyle = (s: unknown) =>
+  s === undefined ||
+  (isRecord(s) &&
+    (s.opacity === undefined || (typeof s.opacity === "number" && Number.isInteger(s.opacity) && s.opacity >= 10 && s.opacity <= 100)) &&
+    (s.elevation === undefined || isElevation(s.elevation)));
 
 const validItem = (item: unknown) =>
   isRecord(item) &&
   validCorners(item.corners) &&
+  validStyle(item.style) &&
+  optionalString(item.alt) &&
   (item.railExpanded === undefined || typeof item.railExpanded === "boolean") &&
   (item.railModal === undefined || typeof item.railModal === "boolean") &&
   (item.trackThickness === undefined || isTrackThickness(item.trackThickness)) &&
@@ -53,6 +63,7 @@ const validGroup = (group: unknown) =>
   Number.isFinite(group.y) &&
   (group.axis === "x" || group.axis === "y") &&
   (group.locked === undefined || typeof group.locked === "boolean") &&
+  optionalString(group.component) &&
   Array.isArray(group.items) &&
   group.items.length > 0 &&
   group.items.every(validItem);
