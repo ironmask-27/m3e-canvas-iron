@@ -337,6 +337,13 @@ export const UI = {
   brief: { ja: "このアプリの説明…", en: "What this app is…", zh: "这个应用的说明…" },
   appName: { ja: "アプリの名前", en: "App name", zh: "应用名称" },
   altText: { ja: "画像の内容（代替テキスト）", en: "What the picture shows", zh: "图片内容（替代文本）" },
+  component: { ja: "再利用するコンポーネント", en: "Reusable component", zh: "可复用组件" },
+  componentName: { ja: "名前（例: ProductCard）", en: "Name (e.g. ProductCard)", zh: "名称（例如 ProductCard）" },
+  componentHint: {
+    ja: "名前を付けると、プロンプトがこのまとまりを 1 つのコンポーネントとして実装するようになります。コピー同士は連動しません。",
+    en: "Naming it tells the prompt to build this section once as a component. Copies are not linked to each other.",
+    zh: "命名后，提示词会把这部分作为独立组件只实现一次。各副本之间不会联动。",
+  },
   assets: { ja: "別途渡すアセット", en: "Separately supplied assets", zh: "另行提供的资源" },
   assetsHint: {
     ja: "このプロンプトとは別に渡すファイル（ロゴ、フォントなど）。プロンプトに名前が書かれます。",
@@ -581,6 +588,8 @@ export const KO: Record<UIKey, string> = {
   noLayers: "이 화면에는 아직 부품이 없습니다", showParts: "안의 부품 표시", hideParts: "안의 부품 숨기기", lock: "잠금", unlock: "잠금 해제", lockedGroup: "잠긴 그룹입니다. 먼저 레이어 패널에서 잠금을 해제하세요", lockedKept: "잠긴 그룹의 부품은 삭제하지 않고 남겼습니다", lockedEdit: "잠금 중입니다. 스위치로 해제",
   brief: "이 앱에 대한 설명…", appName: "앱 이름", targetPlatform: "구현 대상", targetAndroid: "Android 네이티브 앱으로 만들기",
   altText: "이미지 내용(대체 텍스트)", assets: "별도로 제공되는 에셋",
+  component: "재사용 컴포넌트", componentName: "이름(예: ProductCard)",
+  componentHint: "이름을 붙이면 프롬프트가 이 묶음을 하나의 컴포넌트로 한 번만 구현하도록 요청한다. 복사본끼리 서로 연동되지는 않는다.",
   assetsHint: "이 프롬프트와 별도로 제공하는 파일(로고, 글꼴 등). 프롬프트에 이름이 적힌다.",
   addAsset: "에셋 추가", assetName: "파일 이름(예: logo.svg)", assetUse: "사용 위치(예: 스플래시 화면)", assetKind: "종류",
   assetLogo: "로고", assetIcon: "아이콘", assetImage: "이미지", assetFont: "글꼴", assetOther: "기타",

@@ -2356,7 +2356,14 @@ export type Group = {
   /** a hand-made group: parts keep their own offsets (in `pos`) and move as one layer */
   free?: boolean;
   pos?: Record<string, { x: number; y: number }>;
+  /** the author's name for a section that is meant to be a reusable component; the prompt asks
+   *  the coding tool to build it once. A name is not a link between the copies: editing one
+   *  copy does not change the others. */
+  component?: string;
 };
+
+/** how long a component name may be */
+export const COMPONENT_NAME_MAX = 60;
 
 export type FrameMode = "blank" | "phone";
 

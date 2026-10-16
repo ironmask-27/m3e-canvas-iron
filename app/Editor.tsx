@@ -3649,6 +3649,14 @@ export default function Editor({ initialLang, onReady }: { initialLang: Lang; on
     setGroups((prev) => prev.map((g) => (g.id === id ? { ...g, locked: !g.locked } : g)));
   };
 
+  /** names the selected group as a reusable component; a locked group keeps the name it has */
+  const setGroupComponent = (name: string | undefined) => {
+    const g = selectedGroup;
+    if (!g || g.locked) return;
+    snapshot();
+    setGroups((prev) => prev.map((x) => (x.id === g.id ? { ...x, component: name?.trim() ? name : undefined } : x)));
+  };
+
   /** The parts of one group in a new order: reading order for a connected run, back to
    *  front for a free group. Inside a free group a hidden run keeps its slots, handed out
    *  again in the new order, so reordering a list really moves its rows. */
@@ -4863,6 +4871,8 @@ export default function Editor({ initialLang, onReady }: { initialLang: Lang; on
                   selectionKey={selectedIds.join(" ")}
                   onGroup={groupSelected}
                   onUngroup={ungroupSelected}
+                  component={selectedGroup?.component}
+                  onComponentName={setGroupComponent}
                 />
               ) : (
                 <PromptPanel

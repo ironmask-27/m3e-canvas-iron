@@ -24,6 +24,7 @@ import {
 } from "@/lib/tokens";
 import { AltTextRow } from "./AltTextRow";
 import { AppearanceRows } from "./AppearanceRows";
+import { ComponentNameRow } from "./ComponentNameRow";
 import { ButtonInspector } from "./ButtonInspector";
 import { PartInspector } from "./PartInspector";
 import { AlignBox, PartMenu, PlaceFn } from "./PartPanel";
@@ -277,6 +278,8 @@ function GroupPanel({
   onUngroup,
   onPlace,
   selectionKey,
+  component,
+  onComponentName,
 }: {
   p: Palette;
   count: number;
@@ -290,6 +293,9 @@ function GroupPanel({
   onPlace?: PlaceFn;
   /** names the selection, so the spot picked for one is not shown lit for the next */
   selectionKey: string;
+  /** the name the selected group carries as a reusable component */
+  component?: string;
+  onComponentName?: (name: string | undefined) => void;
 }) {
   const lang = useLang();
   const title = grouped ? t("group", lang) : lang === "en" ? `${count} ${t("selectedParts", lang)}` : `${count}${t("selectedParts", lang)}`;
@@ -312,6 +318,9 @@ function GroupPanel({
           <AlignBox key={selectionKey} onPlace={onPlace} p={p} />
         </Section>
       )}
+      {/* only a hand-made group the author put together by hand can be named: it is the one a
+          section is made of, and the one the prompt can ask to be built once */}
+      {grouped && onComponentName && <ComponentNameRow value={component ?? ""} palette={p} onChange={onComponentName} />}
       {/* the header already names the group, so the button that makes or breaks it stands under the sections without a title of its own */}
       <div style={{ display: "flex", flexDirection: "column", gap: 10, padding: "0 4px" }}>
         <button
@@ -360,6 +369,8 @@ export function Inspector({
   railStandalone = false,
   onGroup,
   onUngroup,
+  component,
+  onComponentName,
   widths,
   onPlace,
   selfRect,
@@ -391,6 +402,9 @@ export function Inspector({
   railStandalone?: boolean;
   onGroup?: () => void;
   onUngroup?: () => void;
+  /** the name the selected group carries as a reusable component */
+  component?: string;
+  onComponentName?: (name: string | undefined) => void;
   /** measured widths of the parts that size themselves to their text */
   widths?: Record<string, number>;
   /** puts the selection at one of nine spots in its screen's body, clear of the parts already there */
@@ -422,6 +436,8 @@ export function Inspector({
           onUngroup={onUngroup}
           onPlace={onPlace}
           selectionKey={selectionKey ?? ""}
+          component={component}
+          onComponentName={onComponentName}
         />
       );
     }

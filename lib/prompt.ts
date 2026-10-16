@@ -165,6 +165,37 @@ function selectedText(it: Item, lang: Lang): string {
   return i === 0 || !label ? "the first one is selected" : `"${label}" is selected`;
 }
 
+/** One bullet for a section the author named as a reusable component: how many places it appears
+ *  in, on which screens, and what the coding tool is to do about it. */
+function componentBullet(lang: Lang, name: string, count: number, screens: string[]): string {
+  const q = quote(lang);
+  const n = q(name);
+  const many = count >= 2;
+  const sep = lang === "ja" || lang === "zh" ? "、" : ", ";
+  if (lang === "ja") {
+    const on = screens.length ? `（${screens.map((s) => `${s}画面`).join(sep)}）` : "";
+    const at = `${count} か所に登場する${on}`;
+    return many ? `- ${n}: ${at}。1 つのコンポーネントとして実装し、内容を引数にして使い回す。` : `- ${n}: ${at}。独立したコンポーネントとして実装する。`;
+  }
+  if (lang === "zh") {
+    const on = screens.length ? `（在${screens.map((s) => `${s}屏幕`).join(sep)}）` : "";
+    const at = `出现 ${count} 次${on}`;
+    return many
+      ? `- ${n}：${at}。只实现一次，作为独立组件复用，内容通过参数传入。`
+      : `- ${n}：${at}。作为独立组件实现。`;
+  }
+  if (lang === "ko") {
+    const on = screens.length ? `(${screens.map((s) => `${s} 화면`).join(sep)})` : "";
+    const at = `${count}곳에 나온다${on}`;
+    return many
+      ? `- ${n}: ${at}. 하나의 컴포넌트로 한 번만 구현하고 내용을 매개변수로 받아 재사용한다.`
+      : `- ${n}: ${at}. 독립된 컴포넌트로 구현한다.`;
+  }
+  const on = screens.length ? ` (on the ${screens.join(" and ")} ${screens.length > 1 ? "screens" : "screen"})` : "";
+  const at = many ? `appears ${count} times${on}` : `appears once${on}`;
+  return many ? `- ${n}: ${at}. Build it once as its own component and reuse it, taking its content as parameters.` : `- ${n}: ${at}. Build it as its own component.`;
+}
+
 /** what each kind of separately supplied file is called in the prompt */
 const ASSET_KIND_TEXT: Record<Lang, Record<AssetKind, string>> = {
   ja: { logo: "ロゴ", icon: "アイコン", image: "画像", font: "フォント", other: "その他" },
@@ -1611,6 +1642,7 @@ const PH = {
     hBehavior: "## 振る舞いと画面遷移",
     hStyle: "## 各部品のスタイル",
     styleIntro: "使っている部品ごとの目安です。数値は M3 Expressive の標準値なので、標準コンポーネントで実現できるものは標準に任せ、内容に合わせて調整して構いません。",
+    hComponents: "## 再利用するコンポーネント",
     hAssets: "## 別途提供されるアセット",
     assetsIntro: "以下のファイルはこのプロンプトとは別に渡される。名前のとおりに使い、代わりのものを作らない。",
     hGeneral: "## 全体の指針",
@@ -1657,6 +1689,7 @@ const PH = {
     hBehavior: "## Behavior and navigation",
     hStyle: "## Component styles",
     styleIntro: "Per-component guidance for the parts in use. The numbers are the M3 Expressive defaults: let the standard components handle whatever they already do, and adjust where the content calls for it.",
+    hComponents: "## Reusable components",
     hAssets: "## Assets provided separately",
     assetsIntro: "These files are handed over with this prompt. Use them by name and do not invent substitutes.",
     hGeneral: "## General guidance",
@@ -1703,6 +1736,7 @@ const PH = {
     hBehavior: "## 行为与屏幕跳转",
     hStyle: "## 各组件的样式",
     styleIntro: "以下是所用组件的参考。数值均为 M3 Expressive 的标准值，能用标准组件实现的就交给标准组件，并可根据内容适当调整。",
+    hComponents: "## 可复用组件",
     hAssets: "## 另行提供的资源",
     assetsIntro: "以下文件会与本提示词一起另行提供。请按名称使用，不要自行创造替代品。",
     hGeneral: "## 整体原则",
@@ -1734,6 +1768,7 @@ const PH = {
     hBehavior: "## 동작 및 화면 전환",
     hStyle: "## 부품별 스타일",
     styleIntro: "사용된 부품별 지침입니다. 수치는 M3 Expressive 기본값이며 표준 컴포넌트가 제공하는 동작은 그대로 사용하고 내용에 맞게 조정할 수 있습니다.",
+    hComponents: "## 재사용 컴포넌트",
     hAssets: "## 별도로 제공되는 에셋",
     assetsIntro: "다음 파일은 이 프롬프트와 별도로 제공된다. 이름 그대로 사용하고 대체물을 만들지 않는다.",
     hGeneral: "## 전체 지침",
@@ -1911,6 +1946,30 @@ export function buildPrompt(doc: Doc, widths: Record<string, number>, onlyFrameI
     lines.push(ph.hStyle);
     lines.push(ph.styleIntro);
     for (const s of styleNotes) lines.push(`- ${s}`);
+  }
+
+  /* The sections the author named as reusable components, read from the document's own groups
+   * before the hand-made ones are written out run by run. A name promises the coding tool one
+   * component; it does not link the copies to each other. */
+  const components: { name: string; count: number; screens: string[] }[] = [];
+  for (const g of doc.groups) {
+    const name = trimEnd(g.component ?? "");
+    if (!name) continue;
+    if (only && frameOfGroup(g, allFrames, widths)?.id !== only.id) continue;
+    const f = frameOfGroup(g, allFrames, widths);
+    const screen = f ? q(f.name || ph.screen) : null;
+    const found = components.find((c) => c.name === name);
+    if (!found) {
+      components.push({ name, count: 1, screens: screen ? [screen] : [] });
+      continue;
+    }
+    found.count += 1;
+    if (screen && !found.screens.includes(screen)) found.screens.push(screen);
+  }
+  if (components.length) {
+    lines.push("");
+    lines.push(ph.hComponents);
+    for (const c of components) lines.push(componentBullet(lang, c.name, c.count, c.screens));
   }
 
   /* the files the author hands over with the prompt. They belong to the app rather than to one
