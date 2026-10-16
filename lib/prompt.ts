@@ -1741,7 +1741,7 @@ const PH = {
     hTheme: "## Shape, type and motion",
     hLayout: "## Layout",
     empty: "Nothing has been placed on the screen yet.",
-    screens: (names: string[]) => `There are ${names.length} screens: ${names.join(", ")}.`,
+    screens: (names: string[]) => (names.length === 1 ? `There is one screen: ${names[0]}.` : `There are ${names.length} screens: ${names.join(", ")}.`),
     placement: (place: Place) => (place === "center" ? "The body parts sit together in the vertical center of the screen." : place === "bottom" ? "The body parts sit toward the bottom of the screen, above the navigation bar." : "The body parts are spread over the screen height with equal gaps (a single row sits in the vertical center)."),
     scrolls: (length: number, view: number) => `The screen runs ${length}dp, longer than the ${view}dp the device shows, so its body scrolls vertically; the bars and anything floating over the content (a FAB, a snackbar) stay fixed while it scrolls.`,
     screenHead: (name: string, bg: string | undefined, has: boolean, size?: string) => `The ${name} screen${size || bg ? ` (${[size, bg ? `background ${bg}` : ""].filter(Boolean).join(", ")})` : ""}${has ? ", from top to bottom (overlapping parts are called out as such):" : " is still empty."}`,
@@ -1994,7 +1994,13 @@ export function buildPrompt(doc: Doc, widths: Record<string, number>, onlyFrameI
   if (groups.length === 0) {
     lines.push(ph.empty);
   } else if (frames.length > 0) {
-    if (frames.length > 1) lines.push(ph.screens(frames.map((f) => q(f.name || ph.screen))));
+    if (frames.length > 1) {
+      /* a name is listed once however many widths carry it — the link between the widths is
+         said at the screen itself — while unnamed screens are counted one by one */
+      const names = [...new Set(frames.filter((f) => f.name.trim()).map((f) => f.name.trim()))];
+      const blank = frames.filter((f) => !f.name.trim()).length;
+      lines.push(ph.screens([...names.map(q), ...Array.from({ length: blank }, () => q(ph.screen))]));
+    }
     /** the sizes of a screen drawn at two widths, said once however many layouts it has */
     const saidWidths = new Set<string>();
     frames.forEach((f, i) => {

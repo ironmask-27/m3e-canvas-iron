@@ -68,6 +68,14 @@ describe("a screen drawn at two widths", () => {
     expect(lines(text, LINK[lang])).toHaveLength(1);
   });
 
+  it.each(LANGS)("names a screen drawn at two widths once, in %s", (lang) => {
+    /* the list of screens names it once; the link to the second width is said at the screen */
+    const twice = buildPrompt(pair, {}, undefined, lang)
+      .split("\n")
+      .filter((l) => (l.match(/Home/g) ?? []).length > 1);
+    expect(twice).toEqual([]);
+  });
+
   it.each(LANGS)("leaves two differently named screens alone, in %s", (lang) => {
     const apart = doc([box("a", 16, 100), box("b", 116, 1300)], [phone("p", "Home"), wide("w", "Search")]);
     const text = buildPrompt(apart, {}, undefined, lang);
