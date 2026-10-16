@@ -127,6 +127,7 @@ import { AiSettings, DEFAULT_AI, hasKey, isSecureUrl, loadAiSettings, proposeBeh
 import { barSlotOf, bodyRect, carryFrame, holdsEdgeBar, maxFrameLength, minFrameLength, pullInto, stretchFrame, tidyFrame } from "@/lib/tidy";
 import { constrainModalRails, modalRailOf, updateRail } from "@/lib/rail";
 import { isProject, readProject, saveProject } from "@/lib/project";
+import { storageFill, trySave } from "@/lib/storage";
 import { hasShareHash, readShareHash } from "@/lib/share";
 import { LoadingIndicator } from "@/components/Loading";
 import { draftDesign } from "@/lib/ai";
@@ -610,6 +611,10 @@ export default function Editor({ initialLang, onReady }: { initialLang: Lang; on
   /** groups that must reposition without animating on the next render */
   const instantRef = useRef<Set<string>>(new Set());
   const loadedRef = useRef(false);
+  /** the last document write failed: the notice is shown once per failure streak */
+  const saveFailedRef = useRef(false);
+  /** the browser's storage is nearly full: the notice is shown once per page session */
+  const saveFillRef = useRef(false);
   const initialLangRef = useRef<Lang>(initialLang);
   /** A saved document or the first viewport initialization prevents later reseeding. */
   const hadDocRef = useRef(false);
@@ -885,12 +890,20 @@ export default function Editor({ initialLang, onReady }: { initialLang: Lang; on
 
   useEffect(() => {
     if (!loadedRef.current || editAccess !== "editable") return;
-    try {
-      localStorage.setItem(
-        DOC_KEY,
-        JSON.stringify({ groups, frames, paletteKey, frame, title, brief, promptEdit, promptOptions, platform: platform ?? undefined, customPalette: customPalette ?? undefined, dynamicColor, theme }),
-      );
-    } catch {}
+    const json = JSON.stringify({ groups, frames, paletteKey, frame, title, brief, promptEdit, promptOptions, platform: platform ?? undefined, customPalette: customPalette ?? undefined, dynamicColor, theme });
+    const saved = trySave(localStorage, DOC_KEY, json);
+    if (!saved.ok) {
+      if (!saveFailedRef.current) {
+        saveFailedRef.current = true;
+        showToast(t("saveFailed", lang), 6000, "warning");
+      }
+      return;
+    }
+    saveFailedRef.current = false;
+    if (!saveFillRef.current && storageFill(json) >= 0.8) {
+      saveFillRef.current = true;
+      showToast(t("saveNearlyFull", lang), 6000, "warning");
+    }
   }, [editAccess, groups, frames, paletteKey, frame, title, brief, promptEdit, promptOptions, platform, customPalette, dynamicColor, theme]);
 
   useEffect(() => {
