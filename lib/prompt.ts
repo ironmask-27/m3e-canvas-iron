@@ -1168,6 +1168,54 @@ const WIDE_RAIL_STYLE: Record<Lang, string> = {
   ko: "M3 Expressive 내비게이션 레일: 접으면 너비 96dp, 아이콘 아래에 레이블을 배치한다. 펼치면 너비 220dp, 항목 높이 56dp, 아이콘과 레이블을 8dp 간격으로 가로 배치한다. 기존 상단 앱 바와 맞추어 두 모드의 접힌 상태와 펼친 상태 모두 surfaceContainer 배경을 사용한다. 선택 항목은 secondaryContainer 알약 표시기, onSecondaryContainer 아이콘, 레이블은 secondary를 우선 사용한다. 실제 배경(접힘: surfaceContainer, 펼침: secondaryContainer)과의 대비가 4.5:1 미만이면 각각 onSurface / onSecondaryContainer를 사용한다. 상단 메뉴 버튼으로 펼치기와 접기를 전환한다. 비모달은 콘텐츠 옆에 배치하고 모달은 펼칠 때 스크림과 함께 콘텐츠를 덮어 배경 조작을 차단한다. 스크림을 탭하거나 Escape를 누르면 닫힌다.",
 };
 
+/* ---------- the spacing a screen's own parts sit at ---------- */
+
+/** the margins and gaps the general guidance already asks every screen for */
+export const STANDARD_MARGIN = 16;
+export const STANDARD_GAP = 8;
+/** how far under the standard a screen must sit before it is worth saying so: a dp or two is
+ *  how the sketch was dragged, not a decision */
+const SPACING_TOLERANCE = 2;
+/** dp read off a sketch land on the 4dp grid the design system uses, rounded down so the prompt
+ *  never asks for more room than the sketch actually leaves */
+const tight4 = (n: number) => Math.max(4, Math.floor(n / 4) * 4);
+
+/** What one screen's own parts say about its spacing: how far the outermost rows keep from the
+ *  screen's edges, and the gap between the rows that follow one another.
+ *
+ *  Only spacing tighter than the standard is reported. Rooms left over between parts are how the
+ *  sketch was dragged — the zone words already say where a row sits, and the general guidance
+ *  lets the sizes and gaps be adjusted to the content — so speaking up about them would pin the
+ *  app to an accident. A screen the author packed tighter than 16dp and 8dp is the opposite: the
+ *  default would undo a choice, so the line says so.
+ *
+ *  A row that runs into the screen's edges by design (a bar, a sheet) says nothing about the
+ *  margin, and rows that overlap say nothing about the gap. */
+function spacingOf(groups: Group[], rect: Rect, widths: Record<string, number>): { margin?: number; gap?: number } {
+  const rows = rowsOf(layoutTree(groups, widths)).map((row) => ({
+    l: Math.min(...row.map((n) => n.bb.l)),
+    r: Math.max(...row.map((n) => n.bb.r)),
+    t: Math.min(...row.map((n) => n.bb.t)),
+    b: Math.max(...row.map((n) => n.bb.b)),
+  }));
+  const insets = rows.map((r) => Math.min(r.l - rect.l, rect.r - r.r)).filter((i) => i > 0);
+  const gaps: number[] = [];
+  for (let i = 1; i < rows.length; i++) {
+    const above = rows[i - 1];
+    const below = rows[i];
+    const shares = Math.min(above.r, below.r) - Math.max(above.l, below.l) > SPACING_TOLERANCE;
+    const gap = below.t - above.b;
+    if (shares && gap > SPACING_TOLERANCE) gaps.push(gap);
+  }
+  gaps.sort((a, b) => a - b);
+  const margin = insets.length ? Math.min(...insets) : undefined;
+  const gap = gaps.length ? gaps[Math.floor(gaps.length / 2)] : undefined;
+  return {
+    margin: margin !== undefined && margin < STANDARD_MARGIN - SPACING_TOLERANCE ? tight4(margin) : undefined,
+    gap: gap !== undefined && gap < STANDARD_GAP - SPACING_TOLERANCE ? tight4(gap) : undefined,
+  };
+}
+
 function describeScreen(lines: string[], groups: Group[], frameRect: Rect | null, widths: Record<string, number>, lang: Lang) {
   if (!groups.length) return;
   /* a navigation rail runs the full height, so it is written first, on its own; the
@@ -1637,6 +1685,10 @@ const PH = {
     placement: (place: Place) => (place === "center" ? "本文の部品は画面の縦中央にまとめて配置します。" : place === "bottom" ? "本文の部品は画面の下側（ナビゲーションバーの上）に寄せて配置します。" : "本文の部品は画面の高さいっぱいに均等な間隔で配置します（1 行だけなら縦中央）。"),
     scrolls: (length: number, view: number) => `画面の長さは ${length}dp で、端末に映る ${view}dp より長いため、本文は縦にスクロールします。バーと、コンテンツの上に浮かぶ部品（FAB、スナックバーなど）はスクロールしても固定のままです。`,
     screenHead: (name: string, bg: string | undefined, has: boolean, size?: string) => `${name}画面${size || bg ? `（${[size, bg ? `背景は ${bg}` : ""].filter(Boolean).join("、")}）` : ""}${has ? "は上から順に次の通りです。重なっている部品はその旨を書いています。" : "はまだ空です。"}`,
+    spacing: (margin?: number, gap?: number) => {
+      const parts = [margin !== undefined ? `画面端から ${margin}dp` : "", gap !== undefined ? `行と行の間は ${gap}dp` : ""].filter(Boolean);
+      return `この画面は標準より詰めます: ${parts.join("、")}。`;
+    },
     loose: "画面の外に置かれている部品（共通パーツや参考）:",
     freeform: "画面を上から順に説明します。",
     hBehavior: "## 振る舞いと画面遷移",
@@ -1684,6 +1736,10 @@ const PH = {
     placement: (place: Place) => (place === "center" ? "The body parts sit together in the vertical center of the screen." : place === "bottom" ? "The body parts sit toward the bottom of the screen, above the navigation bar." : "The body parts are spread over the screen height with equal gaps (a single row sits in the vertical center)."),
     scrolls: (length: number, view: number) => `The screen runs ${length}dp, longer than the ${view}dp the device shows, so its body scrolls vertically; the bars and anything floating over the content (a FAB, a snackbar) stay fixed while it scrolls.`,
     screenHead: (name: string, bg: string | undefined, has: boolean, size?: string) => `The ${name} screen${size || bg ? ` (${[size, bg ? `background ${bg}` : ""].filter(Boolean).join(", ")})` : ""}${has ? ", from top to bottom (overlapping parts are called out as such):" : " is still empty."}`,
+    spacing: (margin?: number, gap?: number) => {
+      const parts = [margin !== undefined ? `${margin}dp from the screen edges` : "", gap !== undefined ? `${gap}dp between the rows` : ""].filter(Boolean);
+      return `This screen is laid out tighter than the standard: ${parts.join(" and ")}.`;
+    },
     loose: "Parts placed outside the screens (shared parts or references):",
     freeform: "The screen, from top to bottom:",
     hBehavior: "## Behavior and navigation",
@@ -1731,6 +1787,10 @@ const PH = {
     placement: (place: Place) => (place === "center" ? "内容作为整体，在屏幕内容区域内纵向居中排列。" : place === "bottom" ? "内容区域中的组件靠屏幕底部（导航栏上方）放置。" : "各行内容在屏幕内容区域内纵向均匀分布（只有一行时纵向居中）。"),
     scrolls: (length: number, view: number) => `屏幕总长 ${length}dp，超过设备可显示的 ${view}dp，因此内容区域可纵向滚动；栏以及浮在内容之上的组件（FAB、Snackbar 等）在滚动时保持固定。`,
     screenHead: (name: string, bg: string | undefined, has: boolean, size?: string) => `${name}屏幕${size || bg ? `（${[size, bg ? `背景为 ${bg}` : ""].filter(Boolean).join("，")}）` : ""}${has ? "从上到下依次如下（重叠的组件会特别说明）：" : "目前为空。"}`,
+    spacing: (margin?: number, gap?: number) => {
+      const parts = [margin !== undefined ? `距屏幕边缘 ${margin}dp` : "", gap !== undefined ? `行与行之间 ${gap}dp` : ""].filter(Boolean);
+      return `本屏幕比标准更紧凑：${parts.join("，")}。`;
+    },
     loose: "放在屏幕之外的组件（公共部件或参考）：",
     freeform: "从上到下说明屏幕内容：",
     hBehavior: "## 行为与屏幕跳转",
@@ -1763,6 +1823,10 @@ const PH = {
     placement: (place: Place) => (place === "center" ? "본문 부품은 화면 세로 가운데에 모아 배치한다." : place === "bottom" ? "본문 부품은 화면 아래쪽(내비게이션 바 위)에 붙여 배치한다." : "본문 부품은 화면 높이에 걸쳐 같은 간격으로 배치한다(한 줄뿐이면 세로 가운데)."),
     scrolls: (length: number, view: number) => `화면 길이는 ${length}dp로 기기에 보이는 ${view}dp보다 길어서 본문이 세로로 스크롤된다. 바와 콘텐츠 위에 떠 있는 부품(FAB, 스낵바 등)은 스크롤해도 고정된다.`,
     screenHead: (name: string, bg: string | undefined, has: boolean, size?: string) => `${name} 화면${size || bg ? `(${[size, bg ? `배경 ${bg}` : ""].filter(Boolean).join(", ")})` : ""}. ${has ? "위에서부터 다음과 같습니다. 겹친 부품은 별도로 표시합니다." : "아직 비어 있습니다."}`,
+    spacing: (margin?: number, gap?: number) => {
+      const parts = [margin !== undefined ? `화면 가장자리에서 ${margin}dp` : "", gap !== undefined ? `행 사이 ${gap}dp` : ""].filter(Boolean);
+      return `이 화면은 표준보다 촘촘하게 배치한다: ${parts.join(", ")}.`;
+    },
     loose: "화면 밖에 놓인 부품(공통 부품 또는 참고):",
     freeform: "화면을 위에서부터 설명합니다.",
     hBehavior: "## 동작 및 화면 전환",
@@ -1920,6 +1984,10 @@ export function buildPrompt(doc: Doc, widths: Record<string, number>, onlyFrameI
       if (i > 0 || frames.length > 1) lines.push("");
       if (hasText(f.note)) lines.push(lang === "ja" || lang === "zh" ? `${trimEnd(f.note!)}。` : `${trimEnd(f.note!)}.`);
       lines.push(ph.screenHead(q(f.name || ph.screen), f.bg && f.bg !== "surface" ? f.bg : undefined, gs.length > 0, sizeLabel(f, viewport, lang)));
+      /* the screen's own spacing when it differs from the standard the general guidance asks
+         for, so a tight list or a wide margin survives into the app */
+      const spacing = gs.length ? spacingOf(gs, frameRect(f), widths) : {};
+      if (spacing.margin !== undefined || spacing.gap !== undefined) lines.push(ph.spacing(spacing.margin, spacing.gap));
       if (gs.length > 0 && f.place && f.place !== "top") lines.push(ph.placement(f.place));
       if (gs.length > 0 && scrollsOf(f)) lines.push(ph.scrolls(frameLengthOf(f), frameSizeOf(f).h));
       describeScreen(lines, gs, frameRect(f), widths, lang);
