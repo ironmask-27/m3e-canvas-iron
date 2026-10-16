@@ -1639,6 +1639,13 @@ const viewportOf = (frames: Frame[], phone: boolean): Viewport => {
   const phones = frames.filter(isPhoneFrame).length;
   return phones === frames.length ? "phone" : phones === 0 ? "desktop" : "mixed";
 };
+/** The other frames a screen is drawn again in, at another size. Naming two frames alike is how
+ *  the author says they are one screen at two widths rather than two screens. */
+const twinFrames = (f: Frame, frames: Frame[]) => {
+  const name = f.name.trim();
+  return name ? frames.filter((o) => o.id !== f.id && o.name.trim() === name && isPhoneFrame(o) !== isPhoneFrame(f)) : [];
+};
+
 /** a screen's size, written only when the document mixes sizes */
 const sizeLabel = (f: Frame, vp: Viewport, lang: Lang): string | undefined => {
   if (vp !== "mixed") return undefined;
@@ -1689,6 +1696,8 @@ const PH = {
       const parts = [margin !== undefined ? `画面端から ${margin}dp` : "", gap !== undefined ? `行と行の間は ${gap}dp` : ""].filter(Boolean);
       return `この画面は標準より詰めます: ${parts.join("、")}。`;
     },
+    adaptive: (name: string, sizes: string[]) => `${name}は同じ画面を 2 つの幅で描いたものです（${sizes.map((s) => `${s} レイアウト`).join("、")}）。1 つとして実装し、スマホのレイアウトを画面の中身、幅の広いレイアウトをその並べ替えとして読んでください。`,
+    adaptivePart: (other: string) => `${other} レイアウトと同じ画面をこの幅に並べ替えたものです: 部品と実装はそのまま使い、並べ方だけを変えます。`,
     loose: "画面の外に置かれている部品（共通パーツや参考）:",
     freeform: "画面を上から順に説明します。",
     hBehavior: "## 振る舞いと画面遷移",
@@ -1740,6 +1749,9 @@ const PH = {
       const parts = [margin !== undefined ? `${margin}dp from the screen edges` : "", gap !== undefined ? `${gap}dp between the rows` : ""].filter(Boolean);
       return `This screen is laid out tighter than the standard: ${parts.join(" and ")}.`;
     },
+    adaptive: (name: string, sizes: string[]) =>
+      `${name} is drawn twice, as one screen at two widths (${sizes.map((s) => `a ${s} layout`).join(" and ")}). Build it once and let it adapt: the phone layout says what the screen contains, and the layout for the wider size says how the same content is rearranged.`,
+    adaptivePart: (other: string) => `The same screen as the ${other} layout, arranged for this width: keep its parts and its code paths and change only the arrangement.`,
     loose: "Parts placed outside the screens (shared parts or references):",
     freeform: "The screen, from top to bottom:",
     hBehavior: "## Behavior and navigation",
@@ -1791,6 +1803,8 @@ const PH = {
       const parts = [margin !== undefined ? `距屏幕边缘 ${margin}dp` : "", gap !== undefined ? `行与行之间 ${gap}dp` : ""].filter(Boolean);
       return `本屏幕比标准更紧凑：${parts.join("，")}。`;
     },
+    adaptive: (name: string, sizes: string[]) => `${name}画了两遍，是同一屏幕的两种宽度（${sizes.map((s) => `${s} 布局`).join("、")}）。请只实现一次：手机布局说明屏幕的内容，宽屏布局说明同样内容如何重排。`,
+    adaptivePart: (other: string) => `与 ${other} 布局是同一个屏幕，只是按此宽度重排：沿用其组件与代码，只改变排列方式。`,
     loose: "放在屏幕之外的组件（公共部件或参考）：",
     freeform: "从上到下说明屏幕内容：",
     hBehavior: "## 行为与屏幕跳转",
@@ -1827,6 +1841,8 @@ const PH = {
       const parts = [margin !== undefined ? `화면 가장자리에서 ${margin}dp` : "", gap !== undefined ? `행 사이 ${gap}dp` : ""].filter(Boolean);
       return `이 화면은 표준보다 촘촘하게 배치한다: ${parts.join(", ")}.`;
     },
+    adaptive: (name: string, sizes: string[]) => `${name}은(는) 같은 화면을 두 가지 너비로 그린 것이다(${sizes.map((s) => `${s} 레이아웃`).join(", ")}). 하나로 구현하고, 휴대전화 레이아웃을 화면의 내용, 너비가 넓은 레이아웃을 그 내용의 재배치로 읽는다.`,
+    adaptivePart: (other: string) => `${other} 레이아웃과 같은 화면을 이 너비에 맞게 재배치한 것이다. 부품과 구현은 그대로 쓰고 배치만 바꾼다.`,
     loose: "화면 밖에 놓인 부품(공통 부품 또는 참고):",
     freeform: "화면을 위에서부터 설명합니다.",
     hBehavior: "## 동작 및 화면 전환",
@@ -1979,11 +1995,27 @@ export function buildPrompt(doc: Doc, widths: Record<string, number>, onlyFrameI
     lines.push(ph.empty);
   } else if (frames.length > 0) {
     if (frames.length > 1) lines.push(ph.screens(frames.map((f) => q(f.name || ph.screen))));
+    /** the sizes of a screen drawn at two widths, said once however many layouts it has */
+    const saidWidths = new Set<string>();
     frames.forEach((f, i) => {
       const gs = byFrame.get(f.id) ?? [];
       if (i > 0 || frames.length > 1) lines.push("");
       if (hasText(f.note)) lines.push(lang === "ja" || lang === "zh" ? `${trimEnd(f.note!)}。` : `${trimEnd(f.note!)}.`);
       lines.push(ph.screenHead(q(f.name || ph.screen), f.bg && f.bg !== "surface" ? f.bg : undefined, gs.length > 0, sizeLabel(f, viewport, lang)));
+      /* A screen the author drew again at another width under the same name: the link is said
+         once, and the wide layout is then read as the same screen rearranged rather than as a
+         second screen that would drift away from it. */
+      const twins = twinFrames(f, frames);
+      if (twins.length) {
+        const size = (o: Frame) => sizeLabel(o, viewport, lang) ?? `${frameSizeOf(o).w}×${frameSizeOf(o).h}`;
+        const name = f.name.trim();
+        if (!saidWidths.has(name)) {
+          saidWidths.add(name);
+          const sizes = [...twins, f].sort((a, b) => frameSizeOf(a).w - frameSizeOf(b).w).map(size);
+          lines.push(ph.adaptive(q(name), sizes));
+        }
+        if (!isPhoneFrame(f)) lines.push(ph.adaptivePart(size(twins[0])));
+      }
       /* the screen's own spacing when it differs from the standard the general guidance asks
          for, so a tight list or a wide margin survives into the app */
       const spacing = gs.length ? spacingOf(gs, frameRect(f), widths) : {};
