@@ -715,37 +715,37 @@ function groupText(g: Group, lang: Lang): string {
   const same = g.items.every((it) => it.variant === g.items[0].variant);
   if (lang === "ja") {
     if (kind === "listItem") return `${g.items.length}項目のリスト。上から ${g.items.map((it) => itemText(it, "ja")).join("、")}`;
-    if (kind === "chip") return `${g.items.map((it) => q(it.label) + (it.checked ? "(選択中)" : "")).join("")}のチップが横に並ぶチップグループ${chipRunHeightText(g.items, "ja")}`;
-    if (kind === "iconButton") return `${g.items.map((it) => it.icon ?? "空").join("・")} のアイコンボタンが連結したボタングループ`;
+    if (kind === "chip") return `${g.items.map((it) => q(it.label) + (it.checked ? "(選択中)" : "") + styleSuffix(it, "ja")).join("")}のチップが横に並ぶチップグループ${chipRunHeightText(g.items, "ja")}`;
+    if (kind === "iconButton") return `${g.items.map((it) => (it.icon ?? "空") + styleSuffix(it, "ja")).join("・")} のアイコンボタンが連結したボタングループ`;
     const names = same
-      ? g.items.map((it) => q(it.label || "ラベルなし")).join("")
-      : g.items.map((it) => `${q(it.label || "ラベルなし")}(${vt[it.variant]})`).join("");
+      ? g.items.map((it) => q(it.label || "ラベルなし") + styleSuffix(it, "ja")).join("")
+      : g.items.map((it) => `${q(it.label || "ラベルなし")}(${vt[it.variant]})${styleSuffix(it, "ja")}`).join("");
     return `${names}の${g.items.length}つのボタンが横に連結したボタングループ${same ? `（${vt[g.items[0].variant]}）` : ""}`;
   }
   if (lang === "zh") {
     if (kind === "listItem") return `${g.items.length}项的列表，从上到下依次为 ${g.items.map((it) => itemText(it, "zh")).join("、")}`;
-    if (kind === "chip") return `由${g.items.map((it) => q(it.label) + (it.checked ? "(选中)" : "")).join("")}横向排列组成的标签片组${chipRunHeightText(g.items, "zh")}`;
-    if (kind === "iconButton") return `由 ${g.items.map((it) => it.icon ?? "空").join("、")} 图标按钮相连组成的按钮组`;
+    if (kind === "chip") return `由${g.items.map((it) => q(it.label) + (it.checked ? "(选中)" : "") + styleSuffix(it, "zh")).join("")}横向排列组成的标签片组${chipRunHeightText(g.items, "zh")}`;
+    if (kind === "iconButton") return `由 ${g.items.map((it) => (it.icon ?? "空") + styleSuffix(it, "zh")).join("、")} 图标按钮相连组成的按钮组`;
     const names = same
-      ? g.items.map((it) => q(it.label || "无标签")).join("")
-      : g.items.map((it) => `${q(it.label || "无标签")}(${vt[it.variant]})`).join("");
+      ? g.items.map((it) => q(it.label || "无标签") + styleSuffix(it, "zh")).join("")
+      : g.items.map((it) => `${q(it.label || "无标签")}(${vt[it.variant]})${styleSuffix(it, "zh")}`).join("");
     return `由${names}这 ${g.items.length} 个按钮横向相连组成的按钮组${same ? `（${vt[g.items[0].variant]}）` : ""}`;
   }
   if (lang === "ko") {
     if (kind === "listItem") return `${g.items.length}개 항목의 목록. 위에서부터 ${g.items.map((it) => itemText(it, "ko")).join(", ")}`;
-    if (kind === "chip") return `${g.items.map((it) => q(it.label) + (it.checked ? "(선택됨)" : "")).join(", ")} 칩을 가로로 배치한 칩 그룹${chipRunHeightText(g.items, "ko")}`;
-    if (kind === "iconButton") return `${g.items.map((it) => it.icon ?? "빈 아이콘").join(", ")} 아이콘 버튼을 연결한 버튼 그룹`;
+    if (kind === "chip") return `${g.items.map((it) => q(it.label) + (it.checked ? "(선택됨)" : "") + styleSuffix(it, "ko")).join(", ")} 칩을 가로로 배치한 칩 그룹${chipRunHeightText(g.items, "ko")}`;
+    if (kind === "iconButton") return `${g.items.map((it) => (it.icon ?? "빈 아이콘") + styleSuffix(it, "ko")).join(", ")} 아이콘 버튼을 연결한 버튼 그룹`;
     const names = same
-      ? g.items.map((it) => q(it.label || "레이블 없음")).join(", ")
-      : g.items.map((it) => `${q(it.label || "레이블 없음")}(${vt[it.variant]})`).join(", ");
+      ? g.items.map((it) => q(it.label || "레이블 없음") + styleSuffix(it, "ko")).join(", ")
+      : g.items.map((it) => `${q(it.label || "레이블 없음")}(${vt[it.variant]})${styleSuffix(it, "ko")}`).join(", ");
     return `${names} 버튼 ${g.items.length}개를 가로로 연결한 버튼 그룹${same ? `(${vt[g.items[0].variant]})` : ""}`;
   }
   if (kind === "listItem") return `a list of ${g.items.length} items, top to bottom: ${g.items.map((it) => itemText(it, "en")).join("; ")}`;
-  if (kind === "chip") return `a chip group: ${g.items.map((it) => q(it.label) + (it.checked ? " (selected)" : "")).join(", ")}${chipRunHeightText(g.items, "en")}`;
-  if (kind === "iconButton") return `a connected group of icon buttons: ${g.items.map((it) => it.icon ?? "empty").join(", ")}`;
+  if (kind === "chip") return `a chip group: ${g.items.map((it) => q(it.label) + (it.checked ? " (selected)" : "") + styleSuffix(it, "en")).join(", ")}${chipRunHeightText(g.items, "en")}`;
+  if (kind === "iconButton") return `a connected group of icon buttons: ${g.items.map((it) => (it.icon ?? "empty") + styleSuffix(it, "en")).join(", ")}`;
   const names = same
-    ? g.items.map((it) => q(it.label || "unlabeled")).join(", ")
-    : g.items.map((it) => `${q(it.label || "unlabeled")} (${vt[it.variant]})`).join(", ");
+    ? g.items.map((it) => q(it.label || "unlabeled") + styleSuffix(it, "en")).join(", ")
+    : g.items.map((it) => `${q(it.label || "unlabeled")} (${vt[it.variant]})${styleSuffix(it, "en")}`).join(", ");
   return `a connected button group of ${g.items.length}${same ? ` ${vt[g.items[0].variant]}` : ""} buttons: ${names}`;
 }
 

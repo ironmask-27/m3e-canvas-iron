@@ -114,6 +114,20 @@ describe("the prompt a part style writes", () => {
     }
   });
 
+  it.each(LANGS)("names the faded member of a connected run in %s", (lang) => {
+    setGlobalLang(lang);
+    const doc = fixture("button", { label: "Save", style: { opacity: 40 } });
+    doc.groups = [{ ...doc.groups[0], items: [doc.groups[0].items[0], { ...makeItem("button"), id: "other", label: "Send" }] }];
+    const text = buildPrompt(doc, {}, undefined, lang);
+    /* the suffix sits right after the faded part's own name, in the run's own sentence */
+    const save = text.indexOf("Save");
+    const send = text.indexOf("Send", save);
+    const suffix = text.indexOf(SUFFIX[lang].opacity);
+    expect(save).toBeGreaterThanOrEqual(0);
+    expect(suffix).toBeGreaterThan(save);
+    expect(send).toBeGreaterThan(suffix);
+  });
+
   it("leaves elevation out of a part that is not a box", () => {
     setGlobalLang("en");
     expect(partLine("en", "button", { label: "Save", style: { elevation: 3 } }, "Save")).not.toContain("level 3 shadow");
